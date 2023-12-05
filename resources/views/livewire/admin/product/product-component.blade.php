@@ -1,23 +1,25 @@
 <div>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ __('Categories') }}
+        {{ __('Products') }}
     </h2>
-
     <x-button class="mt-4" wire:click="create">
-        {{ __('Create Category') }}
+        {{ __('Create Product') }}
     </x-button>
     <div class="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="py-3 px-6">{{ __('ID') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('Name') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('Products') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Product') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Category') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Price Buy') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Price Sell') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Stock') }}[{{ __('Units') }}] </th>
                     <th scope="col" class="py-3 px-6">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($categories as $item)
+                @foreach ($products as $item)
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                         <td class="py-4 px-6">
                             {{ $item->id }}
@@ -26,7 +28,16 @@
                             {{ $item->name }}
                         </td>
                         <td class="py-4 px-6">
-                            {{ $item->products->count() }}
+                            {{ $item->category->name }}
+                        </td>
+                        <td class="py-4 px-6">
+                            {{ tramsform_cash($item->price_buy) }}
+                        </td>
+                        <td class="py-4 px-6">
+                            {{ tramsform_cash($item->price_sale) }}
+                        </td>
+                        <td class="py-4 px-6">
+                            {{ $item->stock }}
                         </td>
                         <td class="py-4 px-6">
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -55,18 +66,63 @@
     <!-- Modal Form -->
     <x-dialog-modal wire:model="modalFormVisible">
         <x-slot name="title">
-            {{ __('Save Category') }}
+            {{ __('Save Product') }}
         </x-slot>
 
         <x-slot name="content">
             <div class="mt-4">
                 <x-label for="name" value="{{ __('Name') }}" />
-                <x-input id="name" class="block mt-1 w-full" type="text" wire:model.debounce.800ms="name"
+                <x-input id="name" class="block mt-1 w-full" type="text" wire:model="name"
                     autocomplete="false" />
                 @error('name')
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>
+            <div class="mt-4">
+                <x-label for="category_id" value="{{ __('Category') }}" />
+                <select id="category_id" class="block mt-1 w-full" wire:model="category_id">
+                    <option value="">{{ __('Select Category') }}</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
+                </select>
+                @error('category_id')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div>
+            <div class="mt-4">
+                <x-label for="price_buy" value="{{ __('Price Buy') }}" />
+                <x-input id="price_buy" class="block mt-1 w-full" type="text" wire:model="price_buy"
+                    autocomplete="false" />
+                @error('price_buy')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div>
+            <div class="mt-4">
+                <x-label for="price_sale" value="{{ __('Price Sale') }}" />
+                <x-input id="price_sale" class="block mt-1 w-full" type="text" wire:model="price_sale"
+                    autocomplete="false" />
+                @error('price_sale')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div>
+            <div class="mt-4">
+                <x-label for="stock" value="{{ __('Stock') }}" />
+                <x-input id="stock" class="block mt-1 w-full" type="text" wire:model="stock"
+                    autocomplete="false" />
+                @error('stock')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div>
+            <div class="mt-4">
+                <x-label for="stock_min" value="{{ __('Stock Min.') }}" />
+                <x-input id="stock_min" class="block mt-1 w-full" type="text" wire:model="stock_min"
+                    autocomplete="false" />
+                @error('stock_min')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div>
+
         </x-slot>
 
         <x-slot name="footer">
@@ -74,7 +130,7 @@
                 {{ __('Cancel') }}
             </x-secondary-button>
 
-            @if ($category_id)
+            @if ($product_id)
                 <x-button class="ml-2" wire:click="update" wire:loading.attr="disabled">
                     {{ __('Update') }}
                 </x-button>

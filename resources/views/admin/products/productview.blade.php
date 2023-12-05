@@ -1,5 +1,5 @@
 @extends('admin.layouts.base')
 
 @section('content')
-products
+    <livewire:admin.product.product-component />
 @endsection

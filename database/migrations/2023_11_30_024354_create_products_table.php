@@ -15,8 +15,8 @@ return new class extends Migration
             $table->unsignedInteger('id')->autoIncrement();
             $table->string('name', 50);
             $table->unsignedTinyInteger('category_id')->comment('id de la categoria');
-            $table->unsignedInteger('price_buy')->comment('precio de compra');
-            $table->unsignedInteger('price_sell')->comment('precio de venta');
+            $table->decimal('price_buy', 10, 2)->comment('precio de compra');
+            $table->decimal('price_sale', 10, 2)->comment('precio de venta');
             $table->unsignedInteger('stock')->comment('stock actual');
             $table->tinyInteger('stock_min')->comment('stock minimo');
             $table->string('description', 1000)->nullable()->comment('descripcion del producto');

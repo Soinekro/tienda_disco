@@ -69,6 +69,21 @@
     @stack('modals')
 
     @yield('scripts')
+
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('alert', (event) => {
+                //switch que me recibe el tipo de alerta
+                Swal.fire({
+                    position: 'top-end',
+                    icon: event[0].type,
+                    title: event[0].message,
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+            });
+        });
+    </script>
     @livewireScripts
 </body>
 

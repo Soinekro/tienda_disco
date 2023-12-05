@@ -16,7 +16,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Coca Cola',
             'price_buy' => 2.8,
-            'price_sell' => 5,
+            'price_sale' => 5,
             'category_id' => 1,
             'stock'=> rand(20,100),
             'stock_min' => 10,
@@ -24,7 +24,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Pepsi',
             'price_buy' => 2.7,
-            'price_sell' => 5,
+            'price_sale' => 5,
             'category_id' => 1,
             'stock'=> rand(20,100),
             'stock_min' => 10,
@@ -32,7 +32,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Red Bull',
             'price_buy' => 2.6,
-            'price_sell' => 10,
+            'price_sale' => 10,
             'category_id' => 2,
             'stock'=> rand(20,100),
             'stock_min' => 10,
@@ -40,7 +40,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Vodka Smirnof',
             'price_buy' => 32,
-            'price_sell' => 80,
+            'price_sale' => 80,
             'category_id' => 3,
             'stock'=> rand(20,100),
             'stock_min' => 10,
@@ -48,7 +48,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Ron Cartavio',
             'price_buy' => 35,
-            'price_sell' => 90,
+            'price_sale' => 90,
             'category_id' => 3,
             'stock'=> rand(20,100),
             'stock_min' => 10,
@@ -56,7 +56,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Pisco',
             'price_buy' => 28,
-            'price_sell' => 50,
+            'price_sale' => 50,
             'category_id' => 3,
             'stock'=> rand(20,100),
             'stock_min' => 10,
@@ -64,7 +64,7 @@ class ProductSeeder extends Seeder
         Product::create([
             'name' => 'Agua',
             'price_buy' => 2.1,
-            'price_sell' => 5,
+            'price_sale' => 5,
             'category_id' => 4,
             'stock'=> rand(20,100),
             'stock_min' => 10,

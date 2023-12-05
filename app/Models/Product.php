@@ -18,4 +18,9 @@ class Product extends Model
         'stock_min',
         'description',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
