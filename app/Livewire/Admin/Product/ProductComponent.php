@@ -131,4 +131,9 @@ class ProductComponent extends Component
             'stock_min' => $this->stock_min,
         ];
     }
+
+    public function toUnits($id)
+    {
+        return redirect()->route('admin.products.units', $id);
+    }
 }

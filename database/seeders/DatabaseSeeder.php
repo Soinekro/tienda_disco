@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             ProviderSeeder::class,
             TypePaySeeder::class,
             ClientSeeder::class,
+            UnitSeeder::class,
         ]);
     }
 }

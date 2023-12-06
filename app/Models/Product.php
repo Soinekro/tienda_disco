@@ -23,4 +23,15 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function productUnits()
+    {
+        return $this->hasMany(ProductUnit::class);
+    }
+
+    public function units()
+    {
+        return $this->belongsToMany(Unit::class, 'product_units')
+            ->withPivot('quantity');
+    }
 }
