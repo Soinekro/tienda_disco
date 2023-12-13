@@ -21,4 +21,15 @@ class PanelController extends Controller
     {
         return view('admin.products.product_units', compact('product'));
     }
+
+    public function providers()
+    {
+        return view('admin.shoppings.providers');
+    }
+
+    public function shoppings()
+    {
+        return view('admin.shoppings.index');
+    }
+
 }

@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->comment('id del usuario');
             $table->foreignId('client_id')->constrained()->comment('id del cliente');
-            $table->string('code', 50)->comment('codigo ticket');
+            $table->char('serie', 4)->comment('codigo ticket');
+            $table->unsignedInteger('correlative')
+                ->autoIncrement()
+                ->comment('correlativo de la venta');
             $table->unsignedInteger('total')->comment('total de la venta');
             $table->enum('status', [1, 0])->default(1);
             $table->unsignedTinyInteger('type_pay_id')->comment('pago de la compra');
