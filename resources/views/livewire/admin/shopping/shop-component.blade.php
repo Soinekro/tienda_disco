@@ -285,7 +285,7 @@
                     {{ __('Cancel') }}
                 </x-secondary-button>
 
-                @if ($provider_id)
+                @if ($shop_id)
                     <x-button class="ml-2" wire:click="update" wire:loading.attr="disabled">
                         {{ __('Update') }}
                     </x-button>
