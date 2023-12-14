@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'api_dni_ruc' => [
+        'url' => env('URL_API_NET'),
+        'token' => env('TOKEN_API_NET'),
+    ],
 ];

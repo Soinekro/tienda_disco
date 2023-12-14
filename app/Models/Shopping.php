@@ -15,9 +15,23 @@ class Shopping extends Model
         'date',
         'code',
         'total',
-        'type_pay_id',
         'status',
         'user_id',
         'provider_id',
     ];
+
+    public function provider()
+    {
+        return $this->belongsTo(Provider::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function details()
+    {
+        return $this->hasMany(ShoppingDetail::class);
+    }
 }

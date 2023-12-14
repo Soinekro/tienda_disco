@@ -34,7 +34,8 @@
             "Tests\\": "tests/"
         },
         "files": [
-            "app/Helpers/CashHelper.php"
+            "app/Helpers/CashHelper.php",
+            "app/Helpers/TimeHelper.php"
         ]
     },
     "scripts": {

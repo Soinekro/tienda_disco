@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedInteger('id')->autoIncrement();
             $table->char('ruc', 11)->unique()->comment('ruc');
             $table->string('name', 50);
-            $table->string('phone', 50);
+            $table->string('phone', 50)->nullable();
             $table->string('email', 50)->nullable();
             $table->string('address', 50)->nullable();
             $table->timestamps();

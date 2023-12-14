@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained()->comment('id del cliente');
             $table->char('serie', 4)->comment('codigo ticket');
             $table->unsignedInteger('correlative')
-                ->autoIncrement()
                 ->comment('correlativo de la venta');
             $table->unsignedInteger('total')->comment('total de la venta');
             $table->enum('status', [1, 0])->default(1);

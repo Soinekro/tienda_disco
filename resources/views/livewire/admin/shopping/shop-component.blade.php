@@ -75,6 +75,14 @@
             </x-slot>
             <x-slot name="content">
                 <div class="mt-4">
+                    <x-label for="code" value="{{ __('Code') }}" />
+                    <x-input id="text" class="block mt-1 w-full" type="code" wire:model="code"
+                        autocomplete="false" />
+                    @error('code')
+                        <span class="error">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="mt-4">
                     <x-label for="date" value="{{ __('Date') }}" />
                     <x-input id="date" class="block mt-1 w-full" type="date" wire:model="date"
                         autocomplete="false" />
@@ -84,7 +92,7 @@
                 </div>
                 <div class="mt-4">
                     <x-label for="ruc" value="{{ __('RUC') }}" />
-                    <x-input id="ruc" class="block mt-1 w-full" type="text" wire:model="ruc"
+                    <x-input id="ruc" class="block mt-1 w-full" type="text" wire:model.lazy="ruc"
                         autocomplete="false" />
                     @error('ruc')
                         <span class="error">{{ $message }}</span>
@@ -98,16 +106,8 @@
                         <span class="error">{{ $message }}</span>
                     @enderror
                 </div>
-                <div class="mt-4">
-                    <x-label for="code" value="{{ __('Code') }}" />
-                    <x-input id="code" class="block mt-1 w-full" type="code" wire:model="code"
-                        autocomplete="false" />
-                    @error('code')
-                        <span class="error">{{ $message }}</span>
-                    @enderror
-                </div>
                 {{-- agregar productos --}}
-                <div>
+                <div class="mt-4 shadow-md border-1 border-blue-300">
                     <div class="block md:flex">
                         <select wire:model.lazy="category_id" id="category_id" name="category_id"
                             class="my-0.5 flex-shrink-0 w-full md:max-w-max z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium
@@ -115,7 +115,7 @@
                         focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600
                         dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
                             type="button">
-                            <option value="">{{ __('Select') }}</option>
+                            <option value="" disabled>{{ __('Select') }}</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
@@ -134,22 +134,29 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white w-full rounded-xl shadow-xl overflow-hidden p-1" wire:model="showDrop">
-                        @foreach ($products as $product)
-                            <!-- items -->
-                            <div wire:click="addProductID({{ $product->id }})"
-                                class="w-full flex p-1 pl-2 items-center hover:bg-gray-300 rounded-lg cursor-pointer">
-                                <div class="text-xs text-gray-500">
-                                    <div class="font-bold text-sm">{{ __('Name') }}:
-                                        {{ $product->name }}</div>
-                                    <span class="mr-2">{{ __('Category') }}:
-                                        {{ $product->categoryname }}</span>
+                    <div class="absolute z-10 w-full bg-white rounded-lg shadow-lg mt-1" x-show="showDrop"
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 transform scale-90"
+                        x-transition:enter-end="opacity-100 transform scale-100"
+                        x-transition:leave="transition ease-in duration-300"
+                        x-transition:leave-start="opacity-100 transform scale-100"
+                        x-transition:leave-end="opacity-0 transform scale-90" x-cloak
+                        x-bind:class="{ 'block': showDrop, 'hidden': !showDrop }" wire:model="showDrop">
+                        @if ($products != [])
+                            @foreach ($products as $product)
+                                <!-- items -->
+                                <div wire:click="addProductID({{ $product->id }})"
+                                    class="w-full flex p-1 pl-2 items-center hover:bg-gray-300 rounded-lg cursor-pointer">
+                                    <div class="text-xs text-gray-500">
+                                        <div class="font-bold text-sm">{{ __('Name') }}:
+                                            {{ $product->name }}</div>
+                                        <span class="mr-2">{{ __('Category') }}:
+                                            {{ $product->categoryname }}</span>
+                                    </div>
                                 </div>
-
-                            </div>
-                        @endforeach
+                            @endforeach
+                        @endif
                     </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <div class="my-3">
                             <label for="unit_product" class="block text-sm font-medium text-gray-700">
@@ -161,12 +168,14 @@
                             focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600
                             dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
                                 type="button">
-                                <option value="">{{ __('Select') }}</option>
-                                @foreach ($productUnits as $unit)
-                                    <option value="{{ $unit->id }}">
-                                        {{ $unit->description }}[X{{ $unit->quantity }}]
-                                    </option>
-                                @endforeach
+                                <option value="" disabled>{{ __('Select') }}</option>
+                                @if ($productUnits != [])
+                                    @foreach ($productUnits as $productUnit)
+                                        <option value="{{ $productUnit->id }}">
+                                            {{ $productUnit->unit->name }} X {{ $productUnit->quantity }}
+                                        </option>
+                                    @endforeach
+                                @endif
                             </select>
                             @error('unit_product')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -177,7 +186,7 @@
                                 {{ __('Quantity') }}
                             </label>
                             <input type="number" name="quantityProduct" id="quantityProduct"
-                                wire:model="quantityProduct" wire:keydown="totalProductUpdate"
+                                wire:model.live="quantityProduct"
                                 class="rounded-lg border-4 border-verde-300 w-full md:max-w-xs">
                             @error('quantityProduct')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -188,8 +197,8 @@
                                 {{ __('Price') }}
                                 {{ __('Product') }}
                             </label>
-                            <input type="number" name="priceProduct" id="priceProduct" wire:model="priceProduct"
-                                wire:keydown="priceUpdate"
+                            <input type="number" name="priceProduct" id="priceProduct"
+                                wire:model.live="priceProduct"
                                 class="rounded-lg border-4 border-verde-300 w-full md:max-w-xs">
                             @error('priceProduct')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -199,23 +208,25 @@
                             <label for="totalProduct" class="block text-sm font-medium text-gray-700">
                                 {{ __('Total Product') }}
                             </label>
-                            <input type="number" name="totalProduct" id="totalProduct" wire:model="totalProduct"
-                                disabled class="rounded-lg border-4 border-verde-300 w-full md:max-w-xs">
+                            <input type="number" name="totalProduct" id="totalProduct"
+                                wire:model.live="totalProduct" disabled
+                                class="rounded-lg border-4 border-verde-300 w-full md:max-w-xs">
                             @error('totalProduct')
                                 <span class="text-red-500 text-sm">{{ $message }}</span>
                             @enderror
                         </div>
                         {{-- boton a la derecha para añadir producto --}}
-                        <div class="col-end-3 m-4">
-                            <button wire:click="addProductToCotize" wire:loading.attr="disabled"
-                                wire:target="addProductToCotize"
-                                class="bg-verde-500 hover:bg-verde-300 text-white font-bold py-2 px-4 rounded float-right">
-                                {{ __('Add Product') }}
-                            </button>
-                        </div>
+                        {{-- <div class="col-end-3 m-4"> --}}
+                        <button wire:click="addProductToShop" wire:loading.attr="disabled"
+                            wire:target="addProductToShop"
+                            class="bg-blue-500 hover:bg-verde-300 text-white font-bold py-2 px-4 rounded float-right">
+                            {{ __('Add Product') }}
+                        </button>
+                        {{-- </div> --}}
                     </div>
                     {{-- mostrar carrito --}}
                     @if ($details_products)
+                        {{-- @dd($details_products) --}}
                         <div class="bg-white w-full rounded-xl shadow-xl overflow-x-auto p-1 m-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead>
@@ -246,7 +257,6 @@
                                     <!-- items array-->
                                     @foreach ($details_products as $detail_product)
                                         <tr>
-                                            {{-- table --}}
                                             <td class="px-6 py-4 text-sm text-gray-500">
                                                 {{ $detail_product['name'] }}
                                             </td>
@@ -254,15 +264,15 @@
                                                 {{ $detail_product['quantity'] }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $detail_product['price'] }}
+                                                {{ tramsform_cash($detail_product['price']) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $detail_product['totalProduct'] }}
+                                                {{ tramsform_cash($detail_product['total']) }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 <button
                                                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                                    wire:click="deleteProduct({{ $item->id }})">
+                                                    wire:click="deleteProduct({{ $detail_product['product_id'] }})">
                                                     <svg xmlns="http://www.w3.org/2000/svg" height="1em"
                                                         class="w-6 h-6 mx-auto svg-dark" viewBox="0 0 448 512">
                                                         <path
