@@ -31,14 +31,6 @@ class ProductComponent extends Component
         'delete',
     ];
 
-    protected $rules = [
-        'name' => 'required|min:3|max:255|unique:products,name,{$this->product_id},id',
-        'category_id' => 'required|exists:categories,id|numeric',
-        'price_buy' => 'required|numeric',
-        'price_sale' => 'required|numeric',
-        'stock' => 'required',
-        'stock_min' => 'required',
-    ];
     public function mount()
     {
         $this->categories = Category::select('id', 'name')->get();
@@ -68,7 +60,14 @@ class ProductComponent extends Component
 
     public function store()
     {
-        $this->validate();
+        $this->validate([
+            'name' => 'required|min:3',
+            'category_id' => 'required',
+            'price_buy' => 'required',
+            'price_sale' => 'required',
+            'stock' => 'required',
+            'stock_min' => 'required',
+        ]);
         Product::create($this->modelData());
         $this->modalFormVisible = false;
         $this->resetInputs();
@@ -106,7 +105,14 @@ class ProductComponent extends Component
 
     public function update()
     {
-        $this->validate();
+        $this->validate([
+            'name' => 'required|min:3',
+            'category_id' => 'required',
+            'price_buy' => 'required',
+            'price_sale' => 'required',
+            'stock' => 'required',
+            'stock_min' => 'required',
+        ]);
         Product::find($this->product_id)->update($this->modelData());
         $this->modalFormVisible = false;
         $this->resetInputs();
