@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Sale;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class PanelController extends Controller
@@ -37,11 +38,11 @@ class PanelController extends Controller
     {
         $sale = Sale::with('details.product')->findOrFail($sale);
         //generar pdf
-        // $pdf = \PDF::loadView('admin.sales.print', compact('sale'));
-        //descargar pdf
+        $pdf = Pdf::loadView('admin.sales.print', compact('sale'));
+        //mostrar para impresion
 
-        // return $pdf->download('invoice.pdf');
-        return view('admin.sales.print', compact('sale'));
+        return $pdf->stream($sale->serie.'-'.$sale->correlative.'.pdf');
+        // return view('admin.sales.print', compact('sale'));
     }
 
 }

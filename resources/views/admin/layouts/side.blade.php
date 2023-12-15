@@ -82,7 +82,8 @@
         <div class="h-screen px-3 pb-4 overflow-y-auto dark:bg-gray-800">
             <ul class="space-y-2 font-medium">
                 {{-- @can('admin.categories.index') --}}
-                <x-admin.layouts.side-button href="{{ route('admin.categories.index') }}" :active="request()->routeIs('admin.dashboard.index')">
+                <x-admin.layouts.side-button href="{{ route('admin.dashboard') }}"
+                :active="request()->routeIs('admin.dashboard')">
                     <x-slot name="icon">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                             class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
