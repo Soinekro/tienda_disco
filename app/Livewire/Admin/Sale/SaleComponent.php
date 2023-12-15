@@ -4,8 +4,10 @@ namespace App\Livewire\Admin\Sale;
 
 use App\Models\Category;
 use App\Models\Client;
+use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\Sale;
+use App\Models\TypePay;
 use App\Traits\Livewire\AlertsTrait;
 use App\Traits\Livewire\PaginateTrait;
 use App\Traits\Livewire\SearchSunat;
@@ -39,8 +41,17 @@ class SaleComponent extends Component
 
     public $details_products = [];
 
-    public $showPaydSale = false;
     public $searchProduct;
+
+    public $showSale = false;
+    public $sale = null;
+    public $details_sale = [];
+
+    public $showPaydSale = false;
+    public $salePaid = null;
+    public $typePayments = [];
+    public $typePayment_id = null;
+    public $amount = 0;
 
     public function mount()
     {
@@ -59,7 +70,9 @@ class SaleComponent extends Component
 
     public function render()
     {
-        return view('livewire.admin.sale.sale-component');
+        $salesDB = Sale::orderBy($this->sort, $this->direction)
+            ->paginate($this->perPage);
+        return view('livewire.admin.sale.sale-component', compact('salesDB'));
     }
 
     public function updatedDocumentNumber()
@@ -155,14 +168,14 @@ class SaleComponent extends Component
     {
         $this->validate([
             'product_id' => 'required',
-            'quantityProduct' => 'required',
+            'quantityProduct' => 'required|numeric|min:1',
             'priceProduct' => 'required',
             'totalProduct' => 'required',
         ]);
         //verificar si existe el producto en el carrito
         $product = Product::find($this->product_id);
         if (array_key_exists($this->product_id, $this->details_products)) {
-           //verificar si la cantidad del array y la cantidad del carrito es mayor al stock
+            //verificar si la cantidad del array y la cantidad del carrito es mayor al stock
             if ($this->details_products[$this->product_id]['quantity'] + $this->quantityProduct > $product->stock) {
                 $this->alertError('No hay stock');
                 return;
@@ -220,46 +233,6 @@ class SaleComponent extends Component
         );
     }
 
-    public function saveSale()
-    {
-        $this->validate([
-            'details_products' => 'required',
-        ]);
-        $details_products = session()->get('details_products');
-        $total = 0;
-        foreach ($details_products as $detail) {
-            $total += $detail['totalProduct'];
-        }
-        DB::beginTransaction();
-        try{
-            $sale = Sale::create([
-                'total' => $total,
-                'client_id' => $this->client_id,
-                'user_id' => auth()->user()->id,
-            ]);
-
-            foreach ($details_products as $detail) {
-                $sale->details()->create([
-                    'product_id' => $detail['product_id'],
-                    'quantity' => $detail['quantity'],
-                    'price' => $detail['price'],
-                    'total' => $detail['totalProduct'],
-                ]);
-                $product = Product::find($detail['product_id']);
-                $product->stock -= $detail['quantity'];
-                $product->save();
-            }
-        }catch(\Exception $e){
-            DB::rollBack();
-            dd($e->getMessage());
-            $this->alertError('Error al guardar la venta');
-            return;
-        }
-        $this->resetInputs();
-        $this->resetDetailsProducts();
-        $this->alertSuccess(__('Sale') . ' ' . ('created successfully!'));
-    }
-
     public function decrementProduct($id)
     {
         $this->details_products[$id]['quantity']--;
@@ -291,4 +264,144 @@ class SaleComponent extends Component
             $this->alertError('No hay stock');
         }
     }
+
+    public function saveSale()
+    {
+        $this->validate([
+            'details_products' => 'required|array|min:1',
+        ]);
+        $this->client_id = Client::where('document_number', $this->document_number)->first()->id ?? null;
+        $details_products = session()->get('details_products');
+        $total = 0;
+
+        foreach ($details_products as $detail) {
+            $total += $detail['totalProduct'];
+        }
+
+        $serie = Invoice::where('document_type', '80')->first();
+        DB::beginTransaction();
+
+        try {
+            $sale = Sale::create([
+                'user_id' => auth()->user()->id,
+                'client_id' => $this->client_id,
+                'serie' => $serie->serie,
+                'correlative' => $serie->number,
+                'total' => $total,
+            ]);
+
+            foreach ($details_products as $detail) {
+                $product = Product::find($detail['product_id']);
+                $sale->details()->create([
+                    'product_id' => $detail['product_id'],
+                    'quantity' => $detail['quantity'],
+                    'price_buy' => $product->price_buy,
+                    'price_sale' => $detail['price'],
+                    'total' => $detail['totalProduct'],
+                ]);
+                $product->stock -= $detail['quantity'];
+                $product->save();
+            }
+            $serie->number++;
+            $serie->update();
+            DB::commit();
+            $this->resetInputs();
+            session()->forget('details_products');
+            $this->details_products = [];
+            $this->alertSuccess(__('Sale') . ' ' . ('created successfully!'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+            $this->alertError('Error al guardar la venta');
+            return;
+        }
+    }
+
+    public function showDetails(Sale $sale)
+    {
+        $this->showSale = true;
+        $this->sale = $sale;
+        $this->details_sale = $sale->details;
+        $this->totalCarrito = $sale->total;
+    }
+
+    public function cancelSaleDetails()
+    {
+        $this->showSale = false;
+        $this->sale = null;
+        $this->details_sale = [];
+        $this->totalCarrito = 0;
+    }
+
+    public function deleteSale(Sale $sale)
+    {
+        DB::beginTransaction();
+        try {
+            foreach ($sale->details as $detail) {
+                $product = Product::find($detail->product_id);
+                $product->stock += $detail->quantity;
+                $product->update();
+            }
+            $sale->payments()->delete();
+            $sale->delete();
+            DB::commit();
+            $this->alertSuccess(__('Sale') . ' ' . ('deleted successfully!'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->alertError('Error al eliminar la venta');
+            return;
+        }
+    }
+
+    //pagos
+
+    public function openPays(Sale $sale)
+    {
+        $this->showPaydSale = true;
+        $this->salePaid = $sale;
+        $this->details_sale = $sale->details;
+        $this->totalCarrito = $sale->total;
+        $this->typePayments = TypePay::select('id', 'name')->get();
+        $this->amount = $sale->total - $sale->payments->sum('amount');
+    }
+
+    public function paydSale()
+    {
+        $paid = $this->salePaid->payments->sum('amount');
+        $this->validate([
+            'amount' => 'required|numeric|max:' . $this->salePaid->total - $paid,
+        ]);
+        DB::beginTransaction();
+        try {
+            $this->salePaid->payments()->create([
+                'type_pay_id' => $this->typePayment_id,
+                'amount' => $this->amount,
+                'user_id' => auth()->user()->id,
+                'type' => Sale::TYPE,
+            ]);
+            if ($this->amount == $this->salePaid->total) {
+                $this->salePaid->status = Sale::PAID;
+            } else {
+                $this->salePaid->status = Sale::GENERATE;
+            }
+            $this->salePaid->update();
+            DB::commit();
+            $this->cancelPaydSale();
+            $this->alertSuccess(__('Sale') . ' ' . ('paid successfully!'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->alertError('Error al pagar la venta');
+            return;
+        }
+    }
+
+    public function cancelPaydSale()
+    {
+        $this->showPaydSale = false;
+        $this->salePaid = null;
+        $this->details_sale = [];
+        $this->totalCarrito = 0;
+        $this->amount = 0;
+    }
+
 }

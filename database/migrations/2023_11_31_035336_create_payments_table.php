@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('amount', 8, 2);
             $table->enum('type', ['E', 'I']);
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('type_pay_id')->references('id')->on('type_pays')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

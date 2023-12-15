@@ -14,14 +14,19 @@ return new class extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->comment('id del usuario');
-            $table->foreignId('client_id')->constrained()->comment('id del cliente');
+            $table->foreignId('client_id')
+            ->nullable()
+            ->constrained()->comment('id del cliente');
             $table->char('serie', 4)->comment('codigo ticket');
             $table->unsignedInteger('correlative')
                 ->comment('correlativo de la venta');
             $table->unsignedInteger('total')->comment('total de la venta');
-            $table->enum('status', [1, 0])->default(1);
-            $table->unsignedTinyInteger('type_pay_id')->comment('pago de la compra');
-            $table->foreign('type_pay_id')->references('id')->on('type_pays')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->enum('status', [
+                '1',
+                '0',
+                '2'
+            ])
+            ->default('1');
             $table->timestamps();
         });
     }
