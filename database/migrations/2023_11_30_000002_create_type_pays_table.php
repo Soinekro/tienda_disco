@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('type_pays', function (Blueprint $table) {
             $table->unsignedTinyInteger('id')->autoIncrement();
             $table->string('name', 50)->unique();
+            $table->enum('type', ['E', 'T'])->comment('E: Efectivo, T: Transferencia');
+            $table->boolean('status')->default(true);
         });
     }
 

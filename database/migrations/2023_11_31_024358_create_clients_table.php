@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->char('code',11)->unique()->comment('documento de identidad');
+            $table->enum('type_document', ['DNI', 'RUC'])->default('DNI')->comment('tipo de documento');
+            $table->char('document_number',11)->unique()->comment('documento de identidad');
             $table->string('name', 50);
-            $table->string('phone', 50);
+            $table->string('phone', 50)->nullable();
+            $table->string('email', 50)->nullable();
             $table->string('address', 100)->nullable();
             $table->timestamps();
         });

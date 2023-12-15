@@ -18,7 +18,7 @@
                             </path>
                         </svg>
                     </button>
-                    <a href="{{ route('dashboard') }}" class="flex ml-2 md:mr-32">
+                    <a href="{{ route('sales') }}" class="flex ml-2 md:mr-32">
                         <img src="@if (file_exists(storage_path('app/public/logos/logo.png'))) {{ asset('storage/logos/logo.png') }} @else {{ asset('storage/logos/logo-oficial.png') }} @endif"
                             class="h-8 mr-3" alt="Logo" />
                         <span
@@ -57,8 +57,8 @@
                                 <x-admin.layouts.drop-button href="{{ route('profile.show') }}" class="text-gray-700">
                                     {{ __('Profile') }}
                                 </x-admin.layouts.drop-button>
-                                <x-admin.layouts.drop-button href="{{ route('dashboard') }}" class="text-gray-700">
-                                    {{ __('Main Menu') }}
+                                <x-admin.layouts.drop-button href="{{ route('sales') }}" class="text-gray-700">
+                                    {{ __('Sales') }}
                                 </x-admin.layouts.drop-button>
                                 <form method="POST" action="{{ route('logout') }}" x-data>
                                     @csrf

@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-use function Laravel\Prompts\select;
 
 class ShopComponent extends Component
 {
@@ -290,6 +289,7 @@ class ShopComponent extends Component
     public function store()
     {
         $this->validate([
+            'details_products' => 'required|array|min:1',
             'code' => 'required|unique:shoppings,code,NULL,id,provider_id,' . $this->provider_id . '|max:50',
             'date' => 'required|date',
             'provider_id' => 'required|numeric|min:1|exists:providers,id',
@@ -320,8 +320,9 @@ class ShopComponent extends Component
                 $product->update();
             }
             DB::commit();
-            $shopping->total = $shopping->details()->sum('total');
             //destruir session compras
+            $shopping->total = $shopping->details()->sum('total');
+            $shopping->update();
             session()->forget('compras');
             $this->details_products = [];
             $this->modalFormVisible = false;

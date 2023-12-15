@@ -15,18 +15,23 @@ class TypePaySeeder extends Seeder
     {
         TypePay::create([
             'name' => 'Efectivo',
+            'type' => 'E',
         ]);
         TypePay::create([
             'name' => 'Tarjeta',
+            'type' => 'E',
         ]);
         TypePay::create([
             'name' => 'Transferencia',
+            'type' => 'E',
         ]);
         TypePay::create([
             'name' => 'Yape',
+            'type' => 'E',
         ]);
         TypePay::create([
             'name' => 'Plin',
+            'type' => 'E',
         ]);
     }
 }

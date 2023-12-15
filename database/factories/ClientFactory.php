@@ -16,8 +16,10 @@ class ClientFactory extends Factory
      */
     public function definition(): array
     {
+        $type =$this->faker->randomElement(['DNI', 'RUC']);
         return [
-            'code' => $this->faker->randomElement([$this->faker->unique()->numerify('########'),$this->faker->unique()->numerify('###########')]),
+            'document_number' => $type == 'DNI' ? $this->faker->unique()->numerify('########') : $this->faker->unique()->numerify('###########'),
+            'type_document' =>  $type,
             'name' => $this->faker->name(),
             'phone' => $this->faker->phoneNumber(),
             'address' => $this->faker->address(),

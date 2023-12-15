@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('status', [1, 0])->default(1);
             $table->unsignedTinyInteger('type_pay_id')->comment('pago de la compra');
             $table->foreign('type_pay_id')->references('id')->on('type_pays')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->timestamps();
         });
     }
 

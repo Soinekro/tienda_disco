@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect(route('sales'));
 });
 
 Route::middleware([
@@ -22,7 +22,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('/sales', function () {
         return view('dashboard');
-    })->name('dashboard');
+    })->name('sales');
 });
