@@ -400,13 +400,6 @@
                                 {{-- imagen de deposito --}}
                             </div>
                         </div>
-                        {{-- <div class="flex justify-between">
-                            <div class="text-xl font-bold text-gray-700 mx-2">
-                                {{ __('Reference') }}:
-                                <input type="text" name="reference" id="reference" wire:model="reference"
-                                    class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs">
-                            </div>
-                        </div> --}}
                     </div>
                 </div>
         </x-slot>

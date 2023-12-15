@@ -2,7 +2,7 @@
 if (!function_exists('tramsform_cash')) {
     function tramsform_cash($number)
     {
-        return 'S/.' . number_format($number, 2, '.', ',');
+        return 'S/. ' . number_format($number, 2, '.', ',');
     }
 }
 
