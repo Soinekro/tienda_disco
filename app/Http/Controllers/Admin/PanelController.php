@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Sale;
 use Illuminate\Http\Request;
 
 class PanelController extends Controller
@@ -30,6 +31,17 @@ class PanelController extends Controller
     public function shoppings()
     {
         return view('admin.shoppings.index');
+    }
+
+    public function printSale($sale)
+    {
+        $sale = Sale::with('details.product')->findOrFail($sale);
+        //generar pdf
+        // $pdf = \PDF::loadView('admin.sales.print', compact('sale'));
+        //descargar pdf
+
+        // return $pdf->download('invoice.pdf');
+        return view('admin.sales.print', compact('sale'));
     }
 
 }

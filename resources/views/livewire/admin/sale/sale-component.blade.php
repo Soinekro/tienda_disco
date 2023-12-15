@@ -430,7 +430,7 @@
                                     @if ($item->payments()->sum('amount') == $item->total)
                                         <button
                                             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                            wire:click="printSale({{ $item->id }})">
+                                            onclick="printSale({{ $item->id }})">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 svg-dark"
                                                 viewBox="0 0 384 512">
                                                 <path
@@ -750,21 +750,17 @@
             })
         }
 
-        function confirmDelete(id) {
-            Swal.fire({
-                title: '¿Estas seguro?',
-                text: "¡No podrás revertir esto!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: '¡Si, bórralo!',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    @this.call('deleteSale', id);
-                }
-            })
+        function printSale(id){
+            var url = '{{ route('sales.print', ':id') }}';
+            url = url.replace(':id', id);
+
+            var popup = window.open(
+                url,
+                'popup',
+                'width=800,height=600');
+            popup.focus();
+            popup.print();
+
         }
     </script>
 </div>
