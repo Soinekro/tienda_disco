@@ -25,7 +25,7 @@ class DashboardComponent extends Component
             ->join('type_pays', 'payments.type_pay_id', '=', 'type_pays.id')
             ->select('payments.id','type_pays.name', 'payments.amount', 'payments.created_at', 'payments.type')
             ->orderBy('payments.created_at', 'desc')
-            ->limit(10)
+            ->limit(5)
             ->get();
 
         //obtener las ventas de la semana

@@ -13,9 +13,13 @@
                             <h3 class="text-base font-normal text-gray-500">{{ __('Sales this week') }}</h3>
                         </div>
                     </div>
-                    <div wire:ignore>
-                        <h1>{{ $chartRevenue->options['chart_title'] }}</h1>
+                    <div class="mt-4">
+                        <h1 class="mt-4 text-xl font-bold text-gray-900 mb-2">
+                            {{ $chartRevenue->options['chart_title'] }}
+                        </h1>
+                       <div class="mt-4">
                         {!! $chartRevenue->renderHtml() !!}
+                       </div>
                     </div>
                 </div>
                 <!-- ultimos movimientos -->
