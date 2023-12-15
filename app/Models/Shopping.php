@@ -12,6 +12,9 @@ class Shopping extends Model
 
     const TYPE = 'E';
 
+
+    const PENDING = '1';
+    const COMPLETED = '0';
     protected $fillable = [
         'date',
         'code',
@@ -41,5 +44,10 @@ class Shopping extends Model
         return Attribute::make(
             get: fn (string $value) => strtoupper($value),
         );
+    }
+
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'paymentable');
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductUnit;
 use App\Models\Provider;
 use App\Models\Shopping;
+use App\Models\TypePay;
 use App\Traits\Livewire\AlertsTrait;
 use App\Traits\Livewire\PaginateTrait;
 use App\Traits\Livewire\SearchDocument;
@@ -46,6 +47,14 @@ class ShopComponent extends Component
     public $quantityProduct;
     public $priceProduct;
     public $totalProduct;
+
+    public $showPaydSale = false;
+    public $salePaid;
+    public $details_sale = [];
+    public $totalCarrito = 0;
+    public $typePayments = [];
+    public $typePayment_id;
+    public $amount = 0;
 
     public function render()
     {
@@ -427,5 +436,54 @@ class ShopComponent extends Component
             $this->alerterror(__($e->getMessage()));
             return;
         }
+    }
+
+    public function openPays(Shopping $sale)
+    {
+        $this->showPaydSale = true;
+        $this->salePaid = $sale;
+        $this->details_sale = $sale->details;
+        $this->totalCarrito = $sale->total;
+        $this->typePayments = TypePay::select('id', 'name')->get();
+        $this->amount = $sale->total - $sale->payments->sum('amount');
+    }
+
+    public function paydSale()
+    {
+        $paid = $this->salePaid->payments->sum('amount');
+        $this->validate([
+            'amount' => 'required|numeric|max:' . $this->salePaid->total - $paid,
+        ]);
+        DB::beginTransaction();
+        try {
+            $this->salePaid->payments()->create([
+                'type_pay_id' => $this->typePayment_id,
+                'amount' => $this->amount,
+                'user_id' => auth()->user()->id,
+                'type' => Shopping::TYPE,
+            ]);
+            if ($this->amount == $this->salePaid->total) {
+                $this->salePaid->status = Shopping::COMPLETED;
+            } else {
+                $this->salePaid->status = Shopping::PENDING;
+            }
+            $this->salePaid->update();
+            DB::commit();
+            $this->cancelPaydSale();
+            $this->alertSuccess(__('Sale') . ' ' . ('paid successfully!'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->alertError('Error al pagar la venta');
+            return;
+        }
+    }
+
+    public function cancelPaydSale()
+    {
+        $this->showPaydSale = false;
+        $this->salePaid = null;
+        $this->details_sale = [];
+        $this->totalCarrito = 0;
+        $this->amount = 0;
     }
 }
