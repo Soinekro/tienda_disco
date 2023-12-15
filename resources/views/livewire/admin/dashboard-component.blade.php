@@ -1,31 +1,22 @@
 <div>
-    <!-- component -->
-    <!-- This is an example component -->
-    {{-- <div>
-    <div class="flex overflow-hidden bg-white pt-16">
 
-       <div id="main-content" class="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64"> --}}
     <main>
         <div class="pt-6 px-2">
             <div class="w-full grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
                 <!-- comparacion de movimientos entre ingresos y egresos -->
                 <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8  2xl:col-span-2">
-                    {{-- <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-4">
                         <div class="flex-shrink-0">
-                            <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">$45,385</span>
-                            <h3 class="text-base font-normal text-gray-500">Sales this week</h3>
-                        </div>
-                        <div class="flex items-center justify-end flex-1 text-green-500 text-base font-bold">
-                            12.5%
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd"
-                                    d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
+                            <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+                                {{ tramsform_cash($salesWeek[0]->total) }}
+                            </span>
+                            <h3 class="text-base font-normal text-gray-500">{{ __('Sales this week') }}</h3>
                         </div>
                     </div>
-                    <div id="main-chart"></div> --}}
+                    <div wire:ignore>
+                        <h1>{{ $chartRevenue->options['chart_title'] }}</h1>
+                        {!! $chartRevenue->renderHtml() !!}
+                    </div>
                 </div>
                 <!-- ultimos movimientos -->
                 <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
@@ -44,7 +35,7 @@
                     <div class="flex flex-col mt-8">
                         <div class="overflow-x-auto rounded-lg">
                             <div class="align-middle inline-block min-w-full">
-                                <div class="shadow overflow-hidden sm:rounded-lg">
+                                <div class="shadow overflow-hidden sm:rounded-lg" >
                                     <table class="min-w-full divide-y divide-gray-200">
                                         <thead class="bg-gray-50">
                                             <tr>
@@ -64,7 +55,7 @@
                                         </thead>
                                         <tbody class="bg-white">
                                             @foreach ($movementCash as $item)
-                                                <tr>
+                                                <tr wire:key="cash-{{ $item->id }}">
                                                     <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
                                                         {{ $item->name }} <span class="font-semibold">
                                                             @if ($item->type == 'I')
@@ -318,4 +309,49 @@
             </div>
         </div>
     </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" {{-- integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" --}}
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        var char = @json($chartRevenue->getDatasets());
+        var options = @json($chartRevenue->options);
+        const jsonObject = char[0].data;
+        console.log(char);
+        console.log(options);
+        console.log(options.name);
+        //recorrer el json de data y asignar los valores a un array
+        const labels = [];
+        const dataLabel = [];
+
+        for (const item in jsonObject) {
+            if (jsonObject.hasOwnProperty(item)) {
+                labels.push(item);
+                dataLabel.push(jsonObject[item]);
+            }
+        }
+        console.log(labels);
+        console.log(dataLabel);
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: char[0].name,
+                backgroundColor: "black",
+                borderColor: 'rgb(0, 0, 0)',
+                data: dataLabel,
+                fill: false,
+            }, ],
+        };
+
+        const configLineChart = {
+            type: options.chart_type,
+            data,
+            options: {},
+        };
+
+        var chartLine = new Chart(
+            document.getElementById(options.chart_name),
+            configLineChart
+        );
+    </script>
 </div>
