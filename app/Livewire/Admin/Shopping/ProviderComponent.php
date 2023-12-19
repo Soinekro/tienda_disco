@@ -68,6 +68,7 @@ class ProviderComponent extends Component
                 'address',
                 'email',
                 'phone',
+                'provider_id'
             ]
         );
     }

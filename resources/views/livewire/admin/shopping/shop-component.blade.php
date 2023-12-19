@@ -308,111 +308,112 @@
     @endif
 
     @if ($showPaydSale)
-    <x-dialog-modal wire:model="showPaydSale">
-        <x-slot name="title">
-            {{ __('Payd Sale') }}
-        </x-slot>
-        <x-slot name="content">
-            <div class=" bg-white rounded-xl shadow-xl overflow-x-auto p-1 m-auto">
-                <div class="grid grid-cols-1">
-                    <div class="block xs:flex xs:justify-between">
-                        <div class="text-xl font-bold text-gray-700 mx-2">
-                            {{ __('Date') }}:
-                            {{ format_date($salePaid->created_at) }}
-                        </div>
-                        <div class="text-xl font-bold text-gray-700 mx-2">
-                            {{ __('Code') }}:
-                            {{ $salePaid->code }}
-                        </div>
-                    </div>
-                    <div class="block xs:flex xs:justify-between">
-                        <div class="text-xl font-bold text-gray-700 mx-2">
-                            {{ __('Client') }}:
-                            {{ $salePaid->client->name ?? __('Not Client') }}
-                        </div>
-                        <div class="text-xl font-bold text-gray-700 mx-2">
-                            {{ __('User') }}:
-                            {{ $salePaid->user->name }}
-                        </div>
-                    </div>
-                </div>
-                {{-- formulario para ingresar el tipo de pago el monto, referencia --}}
-                <div class="bg-white rounded-xl shadow-xl overflow-x-auto p-1 mt-3 m-auto">
-                    {{ __('Sale Info') }}
+        <x-dialog-modal wire:model="showPaydSale">
+            <x-slot name="title">
+                {{ __('Payd Sale') }}
+            </x-slot>
+            <x-slot name="content">
+                <div class=" bg-white rounded-xl shadow-xl overflow-x-auto p-1 m-auto">
                     <div class="grid grid-cols-1">
                         <div class="block xs:flex xs:justify-between">
                             <div class="text-xl font-bold text-gray-700 mx-2">
-                                {{ __('Total') }}:
-                                {{ tramsform_cash($salePaid->details->sum('total')) }}
+                                {{ __('Date') }}:
+                                {{ format_date($salePaid->created_at) }}
                             </div>
                             <div class="text-xl font-bold text-gray-700 mx-2">
-                                {{ __('Pending') }}:
-                                {{ tramsform_cash($salePaid->details->sum('total') - $salePaid->payments->sum('amount')) }}
+                                {{ __('Code') }}:
+                                {{ $salePaid->code }}
+                            </div>
+                        </div>
+                        <div class="block xs:flex xs:justify-between">
+                            <div class="text-xl font-bold text-gray-700 mx-2">
+                                {{ __('Client') }}:
+                                {{ $salePaid->client->name ?? __('Not Client') }}
+                            </div>
+                            <div class="text-xl font-bold text-gray-700 mx-2">
+                                {{ __('User') }}:
+                                {{ $salePaid->user->name }}
                             </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1">
-                        <div class="block xs:flex xs:justify-between">
-                            <div class="text-xl font-bold text-gray-700 mx-2">
-                                {{ __('Type') }}:
-                                <select wire:model.lazy="typePayment_id" id="typePayment_id"
-                                    name="typePayment_id"
-                                    class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs" type="button">
-                                    <option value="">{{ __('Select') }}</option>
-                                    @foreach ($typePayments as $typePayment)
-                                        <option value="{{ $typePayment->id }}">
-                                            {{ $typePayment->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <br>
-                                @error('typePayment_id')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="text-xl font-bold text-gray-700 mx-2">
-                                {{ __('Amount') }}:
-                                <input type="number" name="amount" id="amount" wire:model.live="amount"
-                                    class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs">
-                                <br>
-                                @error('amount')
-                                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        {{-- llamar una variable de livewire --}}
-                        <div x-data="{ showEfective: @entangle('showEfective'), showTransfer: @entangle('showTransfer') }">
-                            <div class="block xs:flex xs:justify-between" x-show="showEfective">
+                    {{-- formulario para ingresar el tipo de pago el monto, referencia --}}
+                    <div class="bg-white rounded-xl shadow-xl overflow-x-auto p-1 mt-3 m-auto">
+                        {{ __('Sale Info') }}
+                        <div class="grid grid-cols-1">
+                            <div class="block xs:flex xs:justify-between">
                                 <div class="text-xl font-bold text-gray-700 mx-2">
-                                    {{ __('Paid With') }}:
-                                    <input type="number" name="paidWith" id="paidWith" wire:model="paidWith"
-                                        wire:keydown="paydSaleUpdate"
+                                    {{ __('Total') }}:
+                                    {{ tramsform_cash($salePaid->details->sum('total')) }}
+                                </div>
+                                <div class="text-xl font-bold text-gray-700 mx-2">
+                                    {{ __('Pending') }}:
+                                    {{ tramsform_cash($salePaid->details->sum('total') - $salePaid->payments->sum('amount')) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1">
+                            <div class="block xs:flex xs:justify-between">
+                                <div class="text-xl font-bold text-gray-700 mx-2">
+                                    {{ __('Type') }}:
+                                    <select wire:model.lazy="typePayment_id" id="typePayment_id"
+                                        name="typePayment_id"
+                                        class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs" type="button">
+                                        <option value="">{{ __('Select') }}</option>
+                                        @foreach ($typePayments as $typePayment)
+                                            <option value="{{ $typePayment->id }}">
+                                                {{ $typePayment->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <br>
+                                    @error('typePayment_id')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="text-xl font-bold text-gray-700 mx-2">
+                                    {{ __('Amount') }}:
+                                    <input type="number" name="amount" id="amount" wire:model.live="amount"
                                         class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs">
-                                </div>
-                                <div class="text-xl font-bold text-gray-700 mx-2">
-                                    {{ __('Turned') }}:
-                                    <input type="number" name="turned" id="turned" wire:model.lazy="turned"
-                                        disabled class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs">
+                                    <br>
+                                    @error('amount')
+                                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
+                            {{-- llamar una variable de livewire --}}
+                            <div x-data="{ showEfective: @entangle('showEfective'), showTransfer: @entangle('showTransfer') }">
+                                <div class="block xs:flex xs:justify-between" x-show="showEfective">
+                                    <div class="text-xl font-bold text-gray-700 mx-2">
+                                        {{ __('Paid With') }}:
+                                        <input type="number" name="paidWith" id="paidWith" wire:model="paidWith"
+                                            wire:keydown="paydSaleUpdate"
+                                            class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs">
+                                    </div>
+                                    <div class="text-xl font-bold text-gray-700 mx-2">
+                                        {{ __('Turned') }}:
+                                        <input type="number" name="turned" id="turned" wire:model.lazy="turned"
+                                            disabled class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs">
+                                    </div>
+                                </div>
 
-                            <div class="flex justify-between" x-show="showTransfer">
-                                {{-- imagen de deposito --}}
+                                <div class="flex justify-between" x-show="showTransfer">
+                                    {{-- imagen de deposito --}}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-        </x-slot>
-        <x-slot name="footer">
-            <x-secondary-button wire:click="cancelPaydSale" wire:loading.attr="disabled">
-                {{ __('Close') }}
-            </x-secondary-button>
-            <x-button class="ml-2" wire:click="paydSale" wire:loading.attr="disabled">
-                {{ __('Payd') }}
-            </x-button>
-        </x-slot>
-    </x-dialog-modal>
-@endif
+            </x-slot>
+            <x-slot name="footer">
+                <x-secondary-button wire:click="cancelPaydSale" wire:loading.attr="disabled">
+                    {{ __('Close') }}
+                </x-secondary-button>
+                <x-button class="ml-2" wire:click="paydSale" wire:loading.attr="disabled">
+                    {{ __('Payd') }}
+                </x-button>
+            </x-slot>
+        </x-dialog-modal>
+    @endif
 
     @section('scripts')
         <script>
