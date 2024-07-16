@@ -33,6 +33,10 @@ class PanelController extends Controller
     {
         return view('admin.shoppings.index');
     }
+    public function sales()
+    {
+        return view('dashboard');
+    }
 
     public function printSale($sale)
     {

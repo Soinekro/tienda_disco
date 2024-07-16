@@ -6,12 +6,16 @@ use App\Models\Category;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Product;
+use App\Models\ProductUnit;
+use App\Models\Provider;
 use App\Models\Sale;
 use App\Models\TypePay;
 use App\Traits\Livewire\AlertsTrait;
 use App\Traits\Livewire\PaginateTrait;
+use App\Traits\Livewire\SearchDocument;
 use App\Traits\Livewire\SearchSunat;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -20,48 +24,50 @@ class SaleComponent extends Component
     use WithPagination;
     use PaginateTrait;
     use AlertsTrait;
-    use SearchSunat;
+    use SearchDocument;
+
+    public $modalFormVisible = false;
 
     public $categories = [];
-    public $category_id;
     public $products = [];
-    public $productPicked;
-    public $product_id;
-    public $stockProduct = 0;
-    public $quantityProduct = 1;
-    public $priceProduct = 0;
-    public $totalProduct = 0;
-    public $totalCarrito = 0;
-
-    public $document_number;
-    public $client_id;
-    public $name;
-    public $address;
-
-
+    public $productUnits = [];
     public $details_products = [];
+    public $sale_id;
 
-    public $searchProduct;
+    public $date = '';
+    public $provider_id = '';
+    public $user_id = '';
+    public $total = 0;
+    public $ruc = '';
+    public $name_provider = '';
+    public $code = '';
+    public $unit;
+    public $category_id = '';
+    public $searchProduct = null;
+    public $productPick = null;
 
-    public $showSale = false;
-    public $sale = null;
-    public $details_sale = [];
+    public $showDrop = false;
+    public $unit_product;
+    public $quantityProduct;
+    public $priceProduct;
+    public $totalProduct;
 
     public $showPaydSale = false;
-    public $salePaid = null;
+    public $salePaid;
+    public $details_sale = [];
+    public $totalCarrito = 0;
     public $typePayments = [];
-    public $typePayment_id = null;
+    public $typePayment_id;
     public $amount = 0;
 
     public function mount()
     {
         $this->categories = Category::select('id', 'name')->get();
-        //verifica si existe session de detalles de productos
-        if (session()->has('details_products')) {
-            $this->details_products = session()->get('details_products');
+        if (session()->has('ventas')) {
+            $this->details_products = session()->get('ventas');
             $this->totalCarrito = 0;
             foreach ($this->details_products as $detail) {
-                $this->totalCarrito += $detail['totalProduct'];
+                $this->totalCarrito -= $detail['total'];
             }
         } else {
             $this->details_products = [];
@@ -75,285 +81,366 @@ class SaleComponent extends Component
         return view('livewire.admin.sale.sale-component', compact('salesDB'));
     }
 
-    public function updatedDocumentNumber()
+    public function resetInputs()
     {
-        $client = Client::where('document_number', $this->document_number)
-            ->first();
+        $this->resetValidation();
+        $this->reset(
+            [
+                'sale_id',
+                'date',
+                'provider_id',
+                'user_id',
+                'total',
+                'ruc',
+                'name_provider',
+                'code', 'unit',
+                'category_id',
+                'searchProduct',
+                'productPick',
+                'showDrop',
+                'unit_product',
+                'quantityProduct',
+                'priceProduct',
+                'totalProduct'
+            ]
+        );
 
-        if ($client) {
-            $this->client_id = $client->id;
-            $this->name = $client->name;
-            $this->address = $client->address;
-        } else {
-            //contar cuantos caracteres tiene el documento
-            $n_char = strlen($this->document_number);
-            $type = ($n_char == 8) ? 'dni' : 'ruc';
-
-            $response = $this->searchDocument($type, $this->document_number);
-
-            if ($response['success']) {
-                if ($type == 'ruc') {
-                    $this->name = $response['razon_social'];
-                    $this->address = $response['address'];
-                } else {
-                    $this->name = $response['nombres'];
-                }
-            } else {
-                $this->name = null;
-                $this->address = null;
-            }
-        }
+        $this->details_products = [];
+    }
+    public function create()
+    {
+        $this->resetInputs();
+        $this->categories = DB::table('categories')->select('id', 'name')->get();
+        $this->modalFormVisible = true;
     }
 
-    public function updatedCategoryId()
+    public function updatedRuc()
     {
-        $this->products = Product::where('category_id', $this->category_id)
-            ->when($this->searchProduct, function ($query) {
-                return $query->where('name', 'like', '%' . $this->searchProduct . '%');
-            })
-            ->limit(3)
-            ->get();
+        $provider = DB::table('providers')
+            ->where('ruc', $this->ruc)
+            ->first();
+        if ($provider) {
+            $this->name_provider = $provider->name;
+            $this->provider_id = $provider->id;
+        } else {
+            $response = $this->searchDocument('ruc', $this->ruc);
+            if ($response['success']) {
+                $this->name_provider = $response['nombre'];
+            } else {
+                $this->name_provider = '';
+            }
+            $this->provider_id = Provider::where('ruc', $this->ruc)->first()->id ?? null;
+        }
     }
 
     public function updatedSearchProduct()
     {
-        if ($this->searchProduct != '') {
-            $this->products = Product::where('name', 'like', '%' . $this->searchProduct . '%')
-                ->when($this->category_id, function ($query) {
-                    return $query->where('category_id', $this->category_id);
-                })
-                ->limit(3)
-                ->get();
-        }
+        $this->products = DB::table('products')
+            ->where('products.name', 'like', '%' . $this->searchProduct . '%')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->when($this->category_id, function ($query) {
+                return $query->where('category_id', $this->category_id);
+            })
+            ->where('products.stock', '>', 0)
+            ->select('products.id', 'products.name', 'products.price_sale', 'products.stock', 'categories.name as categoryname')
+            ->get();
     }
 
     public function addProductID(Product $product)
     {
-        // dd($product);
-        $this->productPicked = $product;
-        $this->product_id = $product->id;
-        $this->priceProduct = $product->price_sale;
-        $this->stockProduct = $product->stock;
-        $this->quantityProduct = 1;
-        $this->totalProduct = round_two_decimals($this->priceProduct * $this->quantityProduct);
-        $this->searchProduct = $product->name;
         $this->products = [];
+        $this->category_id = null;
+        $this->productPick = $product;
+        $this->searchProduct = $product->name;
+        $this->productUnits = $product->productUnits;
+        $this->unit_product = $product->productUnits[0]->id;
+        $this->unit = $this->productPick->productUnits()->where('id', $this->unit_product)->first();
+        $this->quantityProduct = 1;
+        $this->priceProduct = $product->price_sale;
+        $this->totalProduct = $product->price_sale;
     }
 
     public function updatedQuantityProduct()
     {
-        if ($this->quantityProduct > $this->stockProduct) {
-            $this->quantityProduct = $this->stockProduct;
-        }
-        if ($this->quantityProduct > 1) {
-            // $this->quantityProduct = 1;
-            $this->totalProduct = round_two_decimals($this->priceProduct * $this->quantityProduct);
+        if ($this->quantityProduct > 0 && $this->productPick != null) {
+            $this->totalProduct = round((float)$this->priceProduct * (float)$this->quantityProduct, 2);
         }
     }
 
-    public function updatedTotalProduct()
+    public function updatedUnitProduct()
     {
-        if ($this->totalProduct > $this->stockProduct) {
-            $this->totalProduct = $this->stockProduct;
+        $this->validate([
+            'productPick' => 'required',
+            'unit_product' => 'required|numeric|min:1|exists:product_units,id',
+        ]);
+        if ($this->unit_product != null && $this->productPick != null) {
+            $this->unit = $this->productPick->productUnits()->where('id', $this->unit_product)->first();
+            $this->priceProduct = $this->productPick->price_sale * $this->unit->quantity;
+            $this->totalProduct = round((float)$this->priceProduct * (float)$this->quantityProduct, 2);
         }
-        $this->quantityProduct = round_two_decimals($this->totalProduct / $this->priceProduct);
     }
 
     public function updatedPriceProduct()
     {
-        $this->totalProduct = round_two_decimals($this->priceProduct * $this->quantityProduct);
+        $this->validate([
+            'priceProduct' => 'required|numeric|min:0',
+        ]);
+        if ($this->priceProduct > 0 && $this->productPick != null) {
+            $this->totalProduct = round((float)$this->priceProduct * (float)$this->quantityProduct, 2);
+        }
     }
 
-    public function addProductToSale()
+    public function addProductToShop()
     {
         $this->validate([
-            'product_id' => 'required',
+            'productPick' => 'required',
             'quantityProduct' => 'required|numeric|min:1',
-            'priceProduct' => 'required',
-            'totalProduct' => 'required',
+            'priceProduct' => 'required|numeric|min:0',
+            'totalProduct' => 'required|numeric|min:0',
         ]);
-        //verificar si existe el producto en el carrito
-        $product = Product::find($this->product_id);
-        if (array_key_exists($this->product_id, $this->details_products)) {
-            //verificar si la cantidad del array y la cantidad del carrito es mayor al stock
-            if ($this->details_products[$this->product_id]['quantity'] + $this->quantityProduct > $product->stock) {
-                $this->alertError('No hay stock');
+
+        // verificar si existe en session
+        $ventas = session()->put('ventas', []);
+        $ventas = session()->get('ventas');
+        if ($ventas) {
+            if (isset($ventas[$this->productPick->id])) {
+                $this->alerterror(__('Product') . ' ' . $this->productPick->name . ' ' . __('already exists'));
                 return;
             }
-            $this->details_products[$this->product_id]['quantity'] += $this->quantityProduct;
-            $this->details_products[$this->product_id]['totalProduct'] += $this->totalProduct;
-        } else {
-            $this->details_products[$this->product_id] = [
-                'product_id' => $this->product_id,
+        }
+        //guardar la compra en una session llamada ventas y luego asignar a la variable details_products
+        $this->details_products[$this->productPick->id] = [
+            'product_id' => $this->productPick->id,
+            'name' => $this->productPick->name . ' ' . $this->unit->unit->name . ' x ' . round($this->unit->quantity),
+            'product_unit_id' => $this->unit->id,
+            'quantity' => $this->quantityProduct,
+            'price_sale' => (float) $this->priceProduct,
+            'total' => (float) $this->totalProduct,
+        ];
+        $ventas = session()->get('ventas');
+        if ($ventas) {
+            $ventas[$this->productPick->id] = [
+                'product_id' => $this->productPick->id,
+                'name' => $this->productPick->name . ' ' . $this->unit->unit->name . ' x ' . round($this->unit->quantity),
+                'product_unit_id' => $this->unit->id,
                 'quantity' => $this->quantityProduct,
-                'price' => $this->priceProduct,
-                'totalProduct' => $this->totalProduct,
-                'name' => $this->productPicked->name,
+                'price_sale' => (float) $this->priceProduct,
+                'total' => (float) $this->totalProduct,
             ];
+            session()->put('ventas', $ventas);
+        } else {
+            session()->put('ventas', $this->details_products);
         }
 
-        $product->stock -= $this->quantityProduct;
-        $product->update();
-        $this->totalCarrito += $this->totalProduct;
-        //guarda en session
-        session()->put('details_products', $this->details_products);
-        //descuenta del stock
+        if ($this->sale_id) {
+            DB::beginTransaction();
+            try {
+                $sale = Sale::find($this->sale_id);
+                $sale->total = $this->total;
+                $sale->update();
+                $sale->details()->create([
+                    'product_id' => $this->productPick->id,
+                    'quantity' => $this->quantityProduct,
+                    'product_unit_id' => $this->unit->id,
+                    'price_buy' => $this->productPick->price_buy,
+                    'price_sale' => $this->priceProduct,
+                    'total' => $this->totalProduct,
+                ]);
+                $sale->total = $sale->details()->sum('total');
+                $sale->update();
+                //agregar stock al producto
+                $product = Product::find($this->productPick->id);
+                $product->stock -= $this->quantityProduct * $this->unit->quantity;
+                $product->price_sale = $this->priceProduct / $this->unit->quantity;
+                $product->update();
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error($e->getMessage());
+            }
+        }
 
-        $this->resetInputs();
+        $this->searchProduct = null;
+        $this->productUnits = [];
+        $this->quantityProduct = null;
+        $this->priceProduct = null;
+        $this->totalProduct = null;
     }
 
     public function deleteProduct($id)
     {
-        foreach ($this->details_products as $detail) {
-            //devuelve al stock
-            $product = Product::find($detail['product_id']);
-            $product->stock += $detail['quantity'];
-            $product->update();
-        }
-        $this->totalCarrito = 0;
-        unset($this->details_products[$id]);
-        foreach ($this->details_products as $detail) {
-            $this->totalCarrito += $detail['totalProduct'];
-        }
-        session()->put('details_products', $this->details_products);
-    }
 
-    public function resetInputs()
-    {
-        $this->reset(
-            [
-                'product_id',
-                'quantityProduct',
-                'priceProduct',
-                'totalProduct',
-                'stockProduct',
-                'searchProduct',
-                'products',
-            ]
-        );
-    }
-
-    public function decrementProduct($id)
-    {
-        $this->details_products[$id]['quantity']--;
-        $this->details_products[$id]['totalProduct'] -= $this->details_products[$id]['price'];
-        $this->totalCarrito -= $this->details_products[$id]['price'];
-        //devuelve al stock
-        $product = Product::find($id);
-        $product->stock++;
-        $product->update();
-        if ($this->details_products[$id]['quantity'] == 0) {
+        DB::beginTransaction();
+        try {
+            if ($this->sale_id) {
+                $sale = Sale::find($this->sale_id);
+                $sale->total = $this->total;
+                $detail_p = $sale->details()
+                    ->where('product_id', $id)
+                    ->first();
+                $detail_p->product
+                    ->update([
+                        'stock' => $detail_p->product->stock + ($detail_p->quantity * $detail_p->productUnit->quantity),
+                    ]);
+                $sale->details()->where('product_id', $id)->delete();
+                $sale->total = $sale->details()->sum('total');
+                $sale->update();
+                DB::commit();
+            }
             unset($this->details_products[$id]);
-        }
-        session()->put('details_products', $this->details_products);
-    }
-
-    public function incrementProduct($id)
-    {
-        $product = Product::find($id);
-        //verifica si hay stock y que no se pasen del stock
-        if ($product->stock > 0 && 1 <= $product->stock) {
-            $this->details_products[$id]['quantity']++;
-            $this->details_products[$id]['totalProduct'] += $this->details_products[$id]['price'];
-            $this->totalCarrito += $this->details_products[$id]['price'];
-            //descuenta del stock
-            $product->stock--;
-            $product->update();
-            session()->put('details_products', $this->details_products);
-        } else {
-            $this->alertError('No hay stock');
+            $ventas = session()->get('ventas');
+            unset($ventas[$id]);
+            session()->put('ventas', $ventas);
+            $this->total = 0;
+            foreach ($this->details_products as $key => $value) {
+                $this->total -= $value['total'];
+            }
+            $this->alertSuccess(__('Deleted Successfully'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->alerterror(__($e->getMessage()));
+            Log::error($e->getMessage());
+            return;
         }
     }
 
-    public function saveSale()
+    public function store()
     {
         $this->validate([
             'details_products' => 'required|array|min:1',
+            'total' => 'required|numeric|min:0',
         ]);
-        $this->client_id = Client::where('document_number', $this->document_number)->first()->id ?? null;
-        $details_products = session()->get('details_products');
-        $total = 0;
-
-        foreach ($details_products as $detail) {
-            $total += $detail['totalProduct'];
-        }
-
-        $serie = Invoice::where('document_type', '80')->first();
         DB::beginTransaction();
-
         try {
             $sale = Sale::create([
+                'serie' => 'T001',
+                'correlative' => (Sale::orderBy('id', 'desc')->first()->correlative ?? 1) + 1,
+                'client_id' => $this->provider_id,
                 'user_id' => auth()->user()->id,
-                'client_id' => $this->client_id,
-                'serie' => $serie->serie,
-                'correlative' => $serie->number,
-                'total' => $total,
+                'total' => $this->total,
             ]);
-
-            foreach ($details_products as $detail) {
-                $product = Product::find($detail['product_id']);
+            foreach ($this->details_products as $key => $value) {
+                $quantity = ProductUnit::find($value['product_unit_id'])->quantity;
+                $product = Product::find($value['product_id']);
                 $sale->details()->create([
-                    'product_id' => $detail['product_id'],
-                    'quantity' => $detail['quantity'],
+                    'product_id' => $value['product_id'],
+                    'quantity' => $value['quantity'],
+                    'product_unit_id' => $value['product_unit_id'],
                     'price_buy' => $product->price_buy,
-                    'price_sale' => $detail['price'],
-                    'total' => $detail['totalProduct'],
+                    'price_sale' => $value['price_sale'],
+                    'total' => $value['total'],
                 ]);
-                $product->stock -= $detail['quantity'];
-                $product->save();
-            }
-            $serie->number++;
-            $serie->update();
-            DB::commit();
-            $this->resetInputs();
-            session()->forget('details_products');
-            $this->details_products = [];
-            $this->alertSuccess(__('Sale') . ' ' . ('created successfully!'));
-        } catch (\Exception $e) {
-            DB::rollBack();
-            dd($e->getMessage());
-            $this->alertError('Error al guardar la venta');
-            return;
-        }
-    }
-
-    public function showDetails(Sale $sale)
-    {
-        $this->showSale = true;
-        $this->sale = $sale;
-        $this->details_sale = $sale->details;
-        $this->totalCarrito = $sale->total;
-    }
-
-    public function cancelSaleDetails()
-    {
-        $this->showSale = false;
-        $this->sale = null;
-        $this->details_sale = [];
-        $this->totalCarrito = 0;
-    }
-
-    public function deleteSale(Sale $sale)
-    {
-        DB::beginTransaction();
-        try {
-            foreach ($sale->details as $detail) {
-                $product = Product::find($detail->product_id);
-                $product->stock += $detail->quantity;
+                //agregar stock al producto
+                $product = Product::find($value['product_id']);
+                $product->stock -= $value['quantity'] * $quantity;
+                $product->price_sale = $value['price_sale'] / $quantity;
                 $product->update();
             }
-            $sale->payments()->delete();
-            $sale->delete();
             DB::commit();
-            $this->alertSuccess(__('Sale') . ' ' . ('deleted successfully!'));
+            //destruir session ventas
+            $sale->total = $sale->details()->sum('total');
+            $sale->update();
+            session()->forget('ventas');
+            $this->details_products = [];
+            $this->modalFormVisible = false;
+            $this->alertSuccess(__('Saved Successfully'));
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->alertError('Error al eliminar la venta');
+            $this->alerterror(__('Error'));
+            Log::error($e->getMessage());
             return;
         }
     }
 
-    //pagos
+    public function delete(Sale $sale)
+    {
+        if ($sale) {
+            //descontar stock
+            DB::beginTransaction();
+            try {
+                foreach ($sale->details as $value) {
+                    $product = Product::find($value->product_id);
+                    $product->stock -= $value->quantity * $value->productUnit->quantity;
+                    $product->update();
+                }
+                $sale->delete();
+                DB::commit();
+                $this->alertSuccess(__('Deleted Successfully'));
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Error al eliminar la venta');
+                $this->alerterror(__('Error'));
+            }
+        } else {
+            $this->alerterror(__('Error'));
+        }
+    }
+
+    public function edit(Sale $sale)
+    {
+        $this->resetInputs();
+        $this->categories = DB::table('categories')->select('id', 'name')->get();
+        $this->sale_id = $sale->id;
+        $this->code = $sale->serie . '-' . $sale->correlative;
+        $this->ruc = $sale->client->document_number ?? 'Sin documento';
+        $this->name_provider = $sale->client->name ?? 'sin nombre';
+        $this->provider_id = $sale->client_id;
+        $this->user_id = $sale->user_id;
+        $ventas = session()->get('ventas');
+        foreach ($sale->details as $value) {
+            $this->details_products[$value->product_id] = [
+                'product_id' => $value->product_id,
+                'name' => $value->product->name . ' ' . $value->productUnit->unit->name . ' x ' . round($value->productUnit->quantity),
+                'unit' => $value->unit_id,
+                'product_unit_id' => $value->product_unit_id,
+                'quantity' => $value->quantity,
+                'price_sale' => $value->price_sale,
+                'total' => $value->total,
+            ];
+            if ($ventas) {
+                $ventas[$value->product_id] = [
+                    'product_id' => $value->product_id,
+                    'name' => $value->product->name . ' ' . $value->productUnit->unit->name . ' x ' . round($value->productUnit->quantity),
+                    'unit' => $value->unit_id,
+                    'product_unit_id' => $value->product_unit_id,
+                    'quantity' => $value->quantity,
+                    'price_sale' => $value->price_sale,
+                    'total' => $value->total,
+                ];
+                session()->put('ventas', $ventas);
+            } else {
+                session()->put('ventas', $this->details_products);
+            }
+        }
+        $this->total = $sale->total;
+        $this->modalFormVisible = true;
+    }
+
+    public function update()
+    {
+        $this->validate([
+            'total' => 'required|numeric|min:0',
+        ]);
+        DB::beginTransaction();
+        try {
+            $sale = Sale::find($this->sale_id);
+            $sale->client_id = $this->provider_id;
+            $sale->user_id = auth()->user()->id;
+            $sale->total = $sale->details()->sum('total');
+            $sale->update();
+            DB::commit();
+            //destruir session ventas
+            session()->forget('ventas');
+            $this->details_products = [];
+            $this->modalFormVisible = false;
+            $this->alertSuccess(__('actualizado correctamente'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+            $this->alerterror(__($e->getMessage()));
+            return;
+        }
+    }
 
     public function openPays(Sale $sale)
     {
@@ -380,9 +467,9 @@ class SaleComponent extends Component
                 'type' => Sale::TYPE,
             ]);
             if ($this->amount == $this->salePaid->total) {
-                $this->salePaid->status = Sale::PAID;
+                $this->salePaid->status = Sale::COMPLETED;
             } else {
-                $this->salePaid->status = Sale::GENERATE;
+                $this->salePaid->status = Sale::PENDING;
             }
             $this->salePaid->update();
             DB::commit();
@@ -403,5 +490,4 @@ class SaleComponent extends Component
         $this->totalCarrito = 0;
         $this->amount = 0;
     }
-
 }

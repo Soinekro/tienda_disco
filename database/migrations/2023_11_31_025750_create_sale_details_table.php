@@ -22,6 +22,11 @@ return new class extends Migration
             $table->double('price_buy');
             $table->double('price_sale');
             $table->double('total');
+            $table->foreignId('product_unit_id')
+                ->comment('unidades de compra')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->foreign('product_id')
                 ->references('id')
                 ->on('products')

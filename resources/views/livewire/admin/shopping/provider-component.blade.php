@@ -3,7 +3,7 @@
         {{ __('Providers') }}
     </h2>
     <x-button class="mt-4" wire:click="create">
-        {{ __('Create Provider') }}
+        {{ __('Create') }} {{ __('Provider') }}
     </x-button>
     <div class="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -67,7 +67,7 @@
     <!-- Modal Form -->
     <x-dialog-modal wire:model="modalFormVisible">
         <x-slot name="title">
-            {{ __('Save Provider') }}
+            {{ __('Save') }} {{ __('provider') }}
         </x-slot>
 
         <x-slot name="content">

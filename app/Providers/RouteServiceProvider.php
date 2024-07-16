@@ -38,9 +38,9 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::prefix('admin/tienda')->middleware('web', 'auth')
                 ->group(base_path('routes/admin-products.php'));
-            Route::prefix('admin/shoppings')->middleware('web', 'auth')
+            Route::prefix('admin/movimientos/shoppings')->middleware('web', 'auth')
                 ->group(base_path('routes/admin-shoppings.php'));
-            Route::prefix('admin/sales')->middleware('web', 'auth')
+            Route::prefix('admin/movimientos/sales')->middleware('web', 'auth')
                 ->group(base_path('routes/admin-sales.php'));
         });
     }

@@ -3,7 +3,7 @@
         {{ __('Shopping') }}
     </h2>
     <x-button class="mt-4" wire:click="create">
-        {{ __('Create Shop') }}
+        {{ __('Crear compra') }}
     </x-button>
     <div class="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -140,14 +140,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="absolute z-10 w-full bg-white rounded-lg shadow-lg mt-1" x-show="showDrop"
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform scale-90"
-                        x-transition:enter-end="opacity-100 transform scale-100"
-                        x-transition:leave="transition ease-in duration-300"
-                        x-transition:leave-start="opacity-100 transform scale-100"
-                        x-transition:leave-end="opacity-0 transform scale-90" x-cloak
-                        x-bind:class="{ 'block': showDrop, 'hidden': !showDrop }" wire:model="showDrop">
+                    <div class="absolute z-10 w-full bg-white rounded-lg shadow-lg mt-1"  wire:model="showDrop">
                         @if ($products != [])
                             @foreach ($products as $product)
                                 <!-- items -->

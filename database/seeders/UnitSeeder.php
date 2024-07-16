@@ -47,16 +47,16 @@ class UnitSeeder extends Seeder
             ],
         ]);
 
-        $products = DB::table('products')->get();
+        // $products = DB::table('products')->get();
 
-        foreach ($products as $product) {
-            DB::table('product_units')->insert([
-                [
-                    'product_id' => $product->id,
-                    'unit_id' => 'NIU',
-                    'quantity' => 1,
-                ],
-            ]);
-        }
+        // foreach ($products as $product) {
+        //     DB::table('product_units')->insert([
+        //         [
+        //             'product_id' => $product->id,
+        //             'unit_id' => 'NIU',
+        //             'quantity' => 1,
+        //         ],
+        //     ]);
+        // }
     }
 }

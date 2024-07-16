@@ -13,6 +13,7 @@ class SaleDetail extends Model
         'sale_id',
         'product_id',
         'quantity',
+        'product_unit_id',
         'price_buy',
         'price_sale',
         'total',
@@ -28,5 +29,13 @@ class SaleDetail extends Model
         return $this->belongsTo(Product::class);
     }
 
-    
+    public function productUnit()
+    {
+        return $this->belongsTo(ProductUnit::class);
+    }
+
+    public function scopeSale($query, $id)
+    {
+        return $query->where('sale_id', $id);
+    }
 }

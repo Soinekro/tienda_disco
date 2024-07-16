@@ -82,8 +82,7 @@
         <div class="h-screen px-3 pb-4 overflow-y-auto dark:bg-gray-800">
             <ul class="space-y-2 font-medium">
                 {{-- @can('admin.categories.index') --}}
-                <x-admin.layouts.side-button href="{{ route('admin.dashboard') }}"
-                :active="request()->routeIs('admin.dashboard')">
+                <x-admin.layouts.side-button href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.dashboard')">
                     <x-slot name="icon">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                             class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
@@ -154,11 +153,11 @@
                     </div>
                 </div>
                 <div x-data="{ open: false }"
-                    @if (request()->is('admin/shoppings*')) x-init="open = true"
+                    @if (request()->is('admin/movimientos*')) x-init="open = true"
                             @else
                             x-init="open = false" @endif
                     class="relative">
-                    <x-admin.layouts.side-button @click="open = !open" :active="request()->is('admin/shoppings*')">
+                    <x-admin.layouts.side-button @click="open = !open" :active="request()->is('admin/movimientos*')">
                         <x-slot name="icon">
                             <template x-if="open">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ms-0.5" viewBox="0 0 448 512">
@@ -173,7 +172,7 @@
                                 </svg>
                             </template>
                         </x-slot>
-                        {{ __('Shopps') }}
+                        {{ __('Movimientos') }}
                     </x-admin.layouts.side-button>
                     <!-- Dropdown menu -->
                     <div x-show="open" class="mt-0.5">
@@ -191,6 +190,18 @@
                         </x-admin.layouts.side-button>
                         <x-admin.layouts.side-button :active="request()->routeIs('admin.shoppings.index')" href="{{ route('admin.shoppings.index') }}">
                             <x-slot name="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
+                                        group-hover:text-gray-900 dark:group-hover:text-white"
+                                    viewBox="0 0 640 512">
+                                    <path
+                                        d="M640 0l0 400c0 61.9-50.1 112-112 112c-61 0-110.5-48.7-112-109.3L48.4 502.9c-17.1 4.6-34.6-5.4-39.3-22.5s5.4-34.6 22.5-39.3L352 353.8 352 64c0-35.3 28.7-64 64-64L640 0zM576 400a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM23.1 207.7c-4.6-17.1 5.6-34.6 22.6-39.2l46.4-12.4 20.7 77.3c2.3 8.5 11.1 13.6 19.6 11.3l30.9-8.3c8.5-2.3 13.6-11.1 11.3-19.6l-20.7-77.3 46.4-12.4c17.1-4.6 34.6 5.6 39.2 22.6l41.4 154.5c4.6 17.1-5.6 34.6-22.6 39.2L103.7 384.9c-17.1 4.6-34.6-5.6-39.2-22.6L23.1 207.7z" />
+                                </svg>
+                            </x-slot>
+                            {{ __('Entradas') }}
+                        </x-admin.layouts.side-button>
+                        <!-- salidas -->
+                        <x-admin.layouts.side-button :active="request()->routeIs('admin.sales.index')" href="{{ route('admin.sales.index') }}">
+                            <x-slot name="icon">
                                 <svg viewBox="0 0 24 24" fill="currentColor"
                                     class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
                                         group-hover:text-gray-900 dark:group-hover:text-white"
@@ -204,7 +215,7 @@
                                         stroke="#141B34" stroke-width="1.5" stroke-linejoin="round" />
                                 </svg>
                             </x-slot>
-                            {{ __('Shoppings') }}
+                            {{ __('Salidas') }}
                         </x-admin.layouts.side-button>
                     </div>
                 </div>
