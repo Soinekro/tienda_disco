@@ -1,6 +1,6 @@
 <div>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ __('Shopping') }}
+        {{ __('Compras') }}
     </h2>
     <x-button class="mt-4" wire:click="create">
         {{ __('Crear salida') }}
@@ -13,7 +13,7 @@
                     <th scope="col" class="py-3 px-6">{{ __('code') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Cliente') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Total') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('user') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('User') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Actions') }}</th>
                 </tr>
             </thead>
@@ -22,7 +22,6 @@
                     @foreach ($salesDB as $item)
                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                             <td class="py-4 px-6">
-                                {{-- dd --}}
                                 {{ date_for_humans($item->date) }}
                             </td>
                             <td class="py-4 px-6">
@@ -115,7 +114,7 @@
                             border-s-2 border border-gray-300 focus:ring-blue-500
                             focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700  dark:border-gray-600
                             dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
-                                placeholder="{{ __('Search Product') }}" required>
+                                placeholder="{{ __('buscar producto') }}" required>
                             <div>
                                 @error('productPicked_id')
                                     <span class="text-red-500 text-sm">{{ $message }}</span>

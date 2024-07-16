@@ -1,9 +1,9 @@
 <div class="div-container">
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ __('Unit To Product') }}
+        {{ __('Unidades de producto') }}
     </h2>
     <x-button class="mt-4" wire:click="create">
-        {{ __('Create Unit') }}
+        {{ __('Crear unidad') }}
     </x-button>
     <div class="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -60,10 +60,7 @@
                 @else
                     {{ __('Update') }}
                 @endif
-                {{ __('New') }}
-                {{ __('Unit') }}
-                {{ __('To') }}
-                {{ __('Product') }}
+                {{ __('Nueva unidad para producto') }}
             </x-slot>
             <x-slot name="content">
                 <div class="grid grid-rows-2">

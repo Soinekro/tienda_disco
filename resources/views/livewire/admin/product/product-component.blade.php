@@ -1,9 +1,9 @@
 <div>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ __('Products') }}
+        {{ __('Productos') }}
     </h2>
     <x-button class="mt-4" wire:click="create">
-        {{ __('Create Product') }}
+        {{ __('Crear producto') }}
     </x-button>
     <div class="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -12,8 +12,8 @@
                     <th scope="col" class="py-3 px-6">{{ __('ID') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Product') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Category') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('Price Buy') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('Price Sell') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Precio compra') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Precio venta') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Stock') }}[{{ __('Units') }}] </th>
                     <th scope="col" class="py-3 px-6">{{ __('Actions') }}</th>
                 </tr>
@@ -74,9 +74,8 @@
     <!-- Modal Form -->
     <x-dialog-modal wire:model="modalFormVisible">
         <x-slot name="title">
-            {{ __('Save Product') }}
+            {{ __('Guardar producto') }}
         </x-slot>
-
         <x-slot name="content">
             <div class="mt-4">
                 <x-label for="name" value="{{ __('Name') }}" />
@@ -130,9 +129,7 @@
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>
-
         </x-slot>
-
         <x-slot name="footer">
             <x-secondary-button wire:click="$toggle('modalFormVisible')" wire:loading.attr="disabled">
                 {{ __('Cancel') }}

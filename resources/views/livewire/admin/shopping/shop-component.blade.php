@@ -303,7 +303,7 @@
     @if ($showPaydSale)
         <x-dialog-modal wire:model="showPaydSale">
             <x-slot name="title">
-                {{ __('Payd Sale') }}
+                {{ __('Pago de Compra') }}
             </x-slot>
             <x-slot name="content">
                 <div class=" bg-white rounded-xl shadow-xl overflow-x-auto p-1 m-auto">
@@ -331,7 +331,7 @@
                     </div>
                     {{-- formulario para ingresar el tipo de pago el monto, referencia --}}
                     <div class="bg-white rounded-xl shadow-xl overflow-x-auto p-1 mt-3 m-auto">
-                        {{ __('Sale Info') }}
+                        {{ __('Información de compra') }}
                         <div class="grid grid-cols-1">
                             <div class="block xs:flex xs:justify-between">
                                 <div class="text-xl font-bold text-gray-700 mx-2">
@@ -402,7 +402,7 @@
                     {{ __('Close') }}
                 </x-secondary-button>
                 <x-button class="ml-2" wire:click="paydSale" wire:loading.attr="disabled">
-                    {{ __('Payd') }}
+                    {{ __('Pagar') }}
                 </x-button>
             </x-slot>
         </x-dialog-modal>

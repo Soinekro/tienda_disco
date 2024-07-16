@@ -1,5 +1,4 @@
 <div>
-
     <main>
         <div class="pt-6 px-2">
             <div class="w-full grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
@@ -10,7 +9,7 @@
                             <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
                                 {{ tramsform_cash($salesWeek[0]->total) }}
                             </span>
-                            <h3 class="text-base font-normal text-gray-500">{{ __('Sales this week') }}</h3>
+                            <h3 class="text-base font-normal text-gray-500">{{ __('Ventas semanales') }}</h3>
                         </div>
                     </div>
                     <div class="mt-4">
@@ -26,15 +25,15 @@
                 <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
                     <div class="mb-4 flex items-center justify-between">
                         <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('Latest Transactions') }}</h3>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('Ultimas Transacciones') }}</h3>
                             <span class="text-base font-normal text-gray-500">
-                                {{ __('This is a list of latest transactions') }}
+                                {{ __('Lista de las ultimas transacciones') }}
                             </span>
                         </div>
-                        <div class="flex-shrink-0">
+                        {{-- <div class="flex-shrink-0">
                             <a href="#"
                                 class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg p-2">{{ 'View all' }}</a>
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="flex flex-col mt-8">
                         <div class="overflow-x-auto rounded-lg">
@@ -49,7 +48,7 @@
                                                 </th>
                                                 <th scope="col"
                                                     class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    {{ __('Date & Time') }}
+                                                    {{ __('Fecha y hora') }}
                                                 </th>
                                                 <th scope="col"
                                                     class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -266,17 +265,17 @@
                     </div>
                 </div> --}}
                 <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
-                    <h3 class="text-xl leading-none font-bold text-gray-900 mb-10">{{ __('Payments Most Used') }}</h3>
+                    <h3 class="text-xl leading-none font-bold text-gray-900 mb-10">{{ __('Pagos mas usados') }}</h3>
                     <div class="block w-full overflow-x-auto">
                         <table class="items-center w-full bg-transparent border-collapse">
                             <thead>
                                 <tr>
                                     <th
                                         class="px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap">
-                                        {{ __('Top Payments') }}</th>
+                                        {{ __('Top pagos') }}</th>
                                     <th
                                         class="px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap">
-                                        {{ __('Total Pays') }}</th>
+                                        {{ __('Total de pagos') }}</th>
                                     <th
                                         class="px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap min-w-140-px">
                                         {{ __('Conteo de Pagos') }}</th>
