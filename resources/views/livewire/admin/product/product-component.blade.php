@@ -5,6 +5,9 @@
     <x-button class="mt-4" wire:click="create">
         {{ __('Crear producto') }}
     </x-button>
+    <x-button class="ml-2 mt-4" wire:click="exportProducts">
+        {{ __('Exportar productos') }}
+    </x-button>
     <div class="overflow-x-auto relative shadow-md sm:rounded-lg mt-4">
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -71,7 +74,6 @@
         </table>
     </div>
 
-    <!-- Modal Form -->
     <x-dialog-modal wire:model="modalFormVisible">
         <x-slot name="title">
             {{ __('Guardar producto') }}
@@ -88,7 +90,7 @@
             <div class="mt-4">
                 <x-label for="category_id" value="{{ __('Category') }}" />
                 <select id="category_id" class="block mt-1 w-full" wire:model="category_id">
-                    <option value="">{{ __('Select Category') }}</option>
+                    <option value="">{{ __('Seleccionar categoría') }}</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}">{{ $category->name }}</option>
                     @endforeach
@@ -106,7 +108,7 @@
                 @enderror
             </div>
             <div class="mt-4">
-                <x-label for="price_sale" value="{{ __('Price Sale') }}" />
+                <x-label for="price_sale" value="{{ __('Precio venta') }}" />
                 <x-input id="price_sale" class="block mt-1 w-full" type="text" wire:model="price_sale"
                     autocomplete="false" />
                 @error('price_sale')

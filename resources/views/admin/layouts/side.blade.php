@@ -31,19 +31,30 @@
                 <div class="flex items-center">
                     <div class="flex items-center ml-3 md:ml-6 mb-1">
                         <div>
-                            <button type="button" @click="openmenu = !openmenu"
+                            {{-- <button type="button" @click="openmenu = !openmenu"
                                 class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                                 aria-expanded="false" data-dropdown-toggle="dropdown-user">
                                 <span class="sr-only">Open user menu</span>
                                 <img class="w-8 h-8 rounded-full"
                                     src="@if (Laravel\Jetstream\Jetstream::managesProfilePhotos()) {{ Auth::user()->profile_photo_url }} @else https://flowbite.com/docs/images/people/profile-picture-5.jpg @endif"
                                     alt="user photo">
-                            </button>
+                            </button> --}}
+                            <span class="inline-flex rounded-md">
+                                <button type="button" @click="openmenu = !openmenu"
+                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
+                                    {{ Auth::user()->name }}
+                                    <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </button>
+                            </span>
                         </div>
-                        <div x-show="openmenu" @click.away="openmenu = false"
-                            class="z-50  my-4 w-40 text-base list-none bg-white divide-y divide-gray-100
+                        <div x-show="openmenu" @click.away="openmenu = false" x-cloak
+                            class="z-50 my-4 w-40 text-base list-none bg-white divide-y divide-gray-100
                             rounded shadow dark:bg-gray-700 dark:divide-gray-600 float-right absolute
-                            right-0 mr-3 mt-64"
+                            right-0 mr-5 mt-64"
                             id="dropdown-user">
                             <div class="px-4 py-3" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">

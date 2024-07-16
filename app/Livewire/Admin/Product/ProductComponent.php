@@ -142,4 +142,9 @@ class ProductComponent extends Component
     {
         return redirect()->route('admin.products.units', $id);
     }
+
+    public function exportProducts()
+    {
+        return redirect()->route('admin.products.export');
+    }
 }

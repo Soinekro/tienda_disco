@@ -13,7 +13,7 @@
                     <th scope="col" class="py-3 px-6">{{ __('code') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Provider') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Total') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('user') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('User') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Actions') }}</th>
                 </tr>
             </thead>
@@ -75,7 +75,7 @@
     @if ($modalFormVisible)
         <x-dialog-modal wire:model="modalFormVisible">
             <x-slot name="title">
-                {{ __('Save Shop') }}
+                {{ __('Guardar compra') }}
             </x-slot>
             <x-slot name="content">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
