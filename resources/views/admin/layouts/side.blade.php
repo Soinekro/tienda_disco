@@ -128,7 +128,7 @@
                                 </svg>
                             </template>
                         </x-slot>
-                        {{ __('Store') }}
+                        {{ __('Gestión de productos') }}
                     </x-admin.layouts.side-button>
                     <!-- Dropdown menu -->
                     <div x-show="open" class="mt-0.5">
@@ -159,7 +159,7 @@
                                         stroke="#141B34" stroke-width="1.5" stroke-linejoin="round" />
                                 </svg>
                             </x-slot>
-                            {{ __('Products') }}
+                            {{ __('Productos') }}
                         </x-admin.layouts.side-button>
                     </div>
                 </div>

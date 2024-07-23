@@ -11,6 +11,7 @@ use App\Traits\Livewire\AlertsTrait;
 use App\Traits\Livewire\PaginateTrait;
 use App\Traits\Livewire\SearchDocument;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -101,9 +102,16 @@ class ShopComponent extends Component
 
     public function updatedCode()
     {
-        $this->validate([
-            'code' => 'required|unique:shoppings,code,NULL,id,provider_id,' . $this->provider_id . '|max:50',
-        ]);
+        $this->validate(
+            [
+                'code' => 'required|unique:shoppings,code,NULL,id,provider_id,' . $this->provider_id . '|max:50',
+            ],
+            [
+                'code.required' => __('El código es requerido'),
+                'code.unique' => __('El código ya ha sido registrado'),
+                'code.max' => __('El código no debe ser mayor a 50 caracteres'),
+            ]
+        );
     }
     public function updatedRuc()
     {
@@ -120,7 +128,9 @@ class ShopComponent extends Component
             } else {
                 $this->name_provider = '';
             }
-            $this->provider_id = Provider::where('ruc', $this->ruc)->first()->id;
+            $this->provider_id = Provider::where('ruc', $this->ruc)->first() != null
+                ? Provider::where('ruc', $this->ruc)->first()->id
+                : null;
         }
     }
 
@@ -132,7 +142,7 @@ class ShopComponent extends Component
             ->when($this->category_id, function ($query) {
                 return $query->where('category_id', $this->category_id);
             })
-            ->where('products.stock', '>', 0)
+            // ->where('products.stock', '>', 0)
             ->select('products.id', 'products.name', 'products.price_sale', 'products.stock', 'categories.name as categoryname')
             ->get();
     }
@@ -160,10 +170,18 @@ class ShopComponent extends Component
 
     public function updatedUnitProduct()
     {
-        $this->validate([
-            'productPick' => 'required',
-            'unit_product' => 'required|numeric|min:1|exists:product_units,id',
-        ]);
+        $this->validate(
+            [
+                'productPick' => 'required',
+                'unit_product' => 'required|numeric|min:1|exists:product_units,id',
+            ],
+            [
+                'productPick.required' => __('El producto es requerido'),
+                'unit_product.required' => __('La unidad es requerida'),
+                'unit_product.numeric' => __('La unidad debe ser un número'),
+                'unit_product.min' => __('La unidad debe ser mayor a 0'),
+            ]
+        );
         if ($this->unit_product != null && $this->productPick != null) {
             $this->unit = $this->productPick->productUnits()->where('id', $this->unit_product)->first();
             $this->priceProduct = $this->productPick->price_buy * $this->unit->quantity;
@@ -184,18 +202,32 @@ class ShopComponent extends Component
     public function addProductToShop()
     {
         // dd($this->productPick, $this->quantityProduct, $this->priceProduct, $this->totalProduct);
-        $this->validate([
-            'productPick' => 'required',
-            'quantityProduct' => 'required|numeric|min:1',
-            'priceProduct' => 'required|numeric|min:0',
-            'totalProduct' => 'required|numeric|min:0',
-        ]);
+        $this->validate(
+            [
+                'productPick' => 'required',
+                'quantityProduct' => 'required|numeric|min:1',
+                'priceProduct' => 'required|numeric|min:0',
+                'totalProduct' => 'required|numeric|min:0',
+            ],
+            [
+                'productPick.required' => __('El producto es requerido'),
+                'quantityProduct.required' => __('La cantidad es requerida'),
+                'quantityProduct.numeric' => __('La cantidad debe ser un número'),
+                'quantityProduct.min' => __('La cantidad debe ser mayor a 0'),
+                'priceProduct.required' => __('El precio es requerido'),
+                'priceProduct.numeric' => __('El precio debe ser un número'),
+                'priceProduct.min' => __('El precio debe ser mayor a 0'),
+                'totalProduct.required' => __('El total es requerido'),
+                'totalProduct.numeric' => __('El total debe ser un número'),
+                'totalProduct.min' => __('El total debe ser mayor a 0'),
+            ]
+        );
 
         // verificar si existe en session
         $compras = session()->get('compras');
         if ($compras) {
             if (isset($compras[$this->productPick->id])) {
-                $this->alerterror(__('Product') . ' ' . $this->productPick->name . ' ' . __('already exists'));
+                $this->alerterror(__('El producto ') . ' ' . $this->productPick->name . ' ' . __(' ya esta registrado'));
                 return;
             }
         }
@@ -247,7 +279,8 @@ class ShopComponent extends Component
                 DB::commit();
             } catch (\Exception $e) {
                 DB::rollBack();
-                $this->alerterror(__($e->getMessage()));
+                Log::error($e->getMessage());
+                $this->alerterror(__(' Error al agregar el producto'));
                 return;
             }
         }
@@ -287,23 +320,48 @@ class ShopComponent extends Component
             foreach ($this->details_products as $key => $value) {
                 $this->total += $value['total'];
             }
-            $this->alertSuccess(__('Deleted Successfully'));
+            $this->alertSuccess(__('Eliminado correctamente'));
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             DB::rollBack();
-            $this->alerterror(__($e->getMessage()));
+            $this->alerterror(__('Error al eliminar'));
             return;
         }
     }
 
     public function store()
     {
-        $this->validate([
-            'details_products' => 'required|array|min:1',
-            'code' => 'required|unique:shoppings,code,NULL,id,provider_id,' . $this->provider_id . '|max:50',
-            'date' => 'required|date',
-            'provider_id' => 'required|numeric|min:1|exists:providers,id',
-            'total' => 'required|numeric|min:0',
-        ]);
+        $this->validate(
+            [
+                'details_products' => 'required|array|min:1',
+                'code' => 'required|unique:shoppings,code,NULL,id,provider_id,' . $this->provider_id . '|max:50',
+                'date' => 'required|date',
+                'provider_id' => 'required|numeric|min:1|exists:providers,id',
+                'ruc' => 'required|numeric|digits:11',
+                'name_provider' => 'required|string',
+                'total' => 'required|numeric|min:0',
+            ],
+            [
+                'details_products.required' => __('El detalle de la compra es requerido'),
+                'details_products.min' => __('El detalle de la compra es requerido'),
+                'code.required' => __('El código es requerido'),
+                'code.unique' => __('El código ya ha sido registrado'),
+                'code.max' => __('El código no debe ser mayor a 50 caracteres'),
+                'date.required' => __('La fecha es requerida'),
+                'date.date' => __('La fecha no es válida'),
+                'ruc.required' => __('El ruc es requerido'),
+                'ruc.numeric' => __('El ruc debe ser un número'),
+                'ruc.digits' => __('El ruc debe tener 11 dígitos'),
+                'name_provider.required' => __('El nombre del proveedor es requerido'),
+                'provider_id.required' => __('El proveedor es requerido'),
+                'provider_id.numeric' => __('El proveedor no es válido'),
+                'provider_id.min' => __('El proveedor no es válido'),
+                'provider_id.exists' => __('El proveedor no es válido'),
+                'total.required' => __('El total es requerido'),
+                'total.numeric' => __('El total debe ser un número'),
+                'total.min' => __('El total debe ser mayor a 0'),
+            ]
+        );
         DB::beginTransaction();
         try {
             $shopping = Shopping::create([
@@ -356,7 +414,7 @@ class ShopComponent extends Component
                 }
                 $shopping->delete();
                 DB::commit();
-                $this->alertSuccess(__('Deleted Successfully'));
+                $this->alertSuccess(__('Guardado correctamente'));
             } catch (\Exception $e) {
                 DB::rollBack();
                 $this->alerterror(__('Error'));
@@ -429,10 +487,10 @@ class ShopComponent extends Component
             session()->forget('compras');
             $this->details_products = [];
             $this->modalFormVisible = false;
-            $this->alertSuccess(__('Updated Successfully'));
+            $this->alertSuccess(__('Actualizado correctamente'));
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e->getMessage());
+            Log::error($e->getMessage());
             $this->alerterror(__($e->getMessage()));
             return;
         }
@@ -470,9 +528,10 @@ class ShopComponent extends Component
             $this->salePaid->update();
             DB::commit();
             $this->cancelPaydSale();
-            $this->alertSuccess(__('Sale') . ' ' . ('paid successfully!'));
+            $this->alertSuccess(__('Venta pagada correctamente'));
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error($e->getMessage());
             $this->alertError('Error al pagar la venta');
             return;
         }

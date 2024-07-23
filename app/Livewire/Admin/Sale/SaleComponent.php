@@ -116,14 +116,25 @@ class SaleComponent extends Component
 
     public function updatedRuc()
     {
-        $provider = DB::table('providers')
-            ->where('ruc', $this->ruc)
+        //debe tener 11 y 8 digitos para ruc y dni respectivamente
+        if (strlen($this->ruc) == 11) {
+            $tDoc = 'ruc';
+        }elseif(strlen($this->ruc) == 8){
+            $tDoc = 'dni';
+        }else{
+            $this->alerterror(__('El número de documento debe tener 11 dígitos para RUC y 8 dígitos para DNI'));
+            return;
+        }
+
+        $provider = DB::table('clients')
+            ->where('document_number', $this->ruc)
             ->first();
         if ($provider) {
             $this->name_provider = $provider->name;
             $this->provider_id = $provider->id;
         } else {
-            $response = $this->searchDocument('ruc', $this->ruc);
+            $response = $this->searchDocument($tDoc, $this->ruc);
+            // dd($response);
             if ($response['success']) {
                 $this->name_provider = $response['nombre'];
             } else {
@@ -172,7 +183,15 @@ class SaleComponent extends Component
         $this->validate([
             'productPick' => 'required',
             'unit_product' => 'required|numeric|min:1|exists:product_units,id',
-        ]);
+        ],
+        [
+            'productPick.required' => __('El campo producto es obligatorio'),
+            'unit_product.required' => __('El campo unidad es obligatorio'),
+            'unit_product.numeric' => __('El campo unidad debe ser un número'),
+            'unit_product.min' => __('El campo unidad debe ser mayor a 0'),
+            'unit_product.exists' => __('El campo unidad no existe'),
+        ]
+    );
         if ($this->unit_product != null && $this->productPick != null) {
             $this->unit = $this->productPick->productUnits()->where('id', $this->unit_product)->first();
             $this->priceProduct = $this->productPick->price_sale * $this->unit->quantity;
@@ -197,14 +216,27 @@ class SaleComponent extends Component
             'quantityProduct' => 'required|numeric|min:1',
             'priceProduct' => 'required|numeric|min:0',
             'totalProduct' => 'required|numeric|min:0',
-        ]);
+        ],
+        [
+            'productPick.required' => __('El campo producto es obligatorio'),
+            'quantityProduct.required' => __('El campo cantidad es obligatorio'),
+            'quantityProduct.numeric' => __('El campo cantidad debe ser un número'),
+            'quantityProduct.min' => __('El campo cantidad debe ser mayor a 0'),
+            'priceProduct.required' => __('El campo precio es obligatorio'),
+            'priceProduct.numeric' => __('El campo precio debe ser un número'),
+            'priceProduct.min' => __('El campo precio debe ser mayor a 0'),
+            'totalProduct.required' => __('El campo total es obligatorio'),
+            'totalProduct.numeric' => __('El campo total debe ser un número'),
+            'totalProduct.min' => __('El campo total debe ser mayor a 0'),
+        ]
+    );
 
         // verificar si existe en session
         $ventas = session()->put('ventas', []);
         $ventas = session()->get('ventas');
         if ($ventas) {
             if (isset($ventas[$this->productPick->id])) {
-                $this->alerterror(__('Product') . ' ' . $this->productPick->name . ' ' . __('already exists'));
+                $this->alerterror(__('El producto ') . ' ' . $this->productPick->name . ' ' . __(' ya esta registrado'));
                 return;
             }
         }
@@ -295,7 +327,7 @@ class SaleComponent extends Component
             foreach ($this->details_products as $key => $value) {
                 $this->total -= $value['total'];
             }
-            $this->alertSuccess(__('Deleted Successfully'));
+            $this->alertSuccess(__('Eliminado correctamente'));
         } catch (\Exception $e) {
             DB::rollBack();
             $this->alerterror(__($e->getMessage()));
@@ -309,7 +341,15 @@ class SaleComponent extends Component
         $this->validate([
             'details_products' => 'required|array|min:1',
             'total' => 'required|numeric|min:0',
-        ]);
+        ],
+        [
+            'details_products.required' => __('El campo productos es obligatorio'),
+            'details_products.min' => __('El campo productos debe tener al menos un producto'),
+            'total.required' => __('El campo total es obligatorio'),
+            'total.numeric' => __('El campo total debe ser un número'),
+            'total.min' => __('El campo total debe ser mayor a 0'),
+        ]
+    );
         DB::beginTransaction();
         try {
             $sale = Sale::create([
@@ -343,7 +383,7 @@ class SaleComponent extends Component
             session()->forget('ventas');
             $this->details_products = [];
             $this->modalFormVisible = false;
-            $this->alertSuccess(__('Saved Successfully'));
+            $this->alertSuccess(__('Guardado correctamente'));
         } catch (\Exception $e) {
             DB::rollBack();
             $this->alerterror(__('Error'));
@@ -365,7 +405,7 @@ class SaleComponent extends Component
                 }
                 $sale->delete();
                 DB::commit();
-                $this->alertSuccess(__('Deleted Successfully'));
+                $this->alertSuccess(__('Eliminado correctamente'));
             } catch (\Exception $e) {
                 DB::rollBack();
                 Log::error('Error al eliminar la venta');
@@ -433,7 +473,7 @@ class SaleComponent extends Component
             session()->forget('ventas');
             $this->details_products = [];
             $this->modalFormVisible = false;
-            $this->alertSuccess(__('actualizado correctamente'));
+            $this->alertSuccess(__('Actualizado correctamente'));
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e->getMessage());
@@ -477,6 +517,7 @@ class SaleComponent extends Component
             $this->alertSuccess(__('Sale') . ' ' . ('paid successfully!'));
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error($e->getMessage());
             $this->alertError('Error al pagar la venta');
             return;
         }

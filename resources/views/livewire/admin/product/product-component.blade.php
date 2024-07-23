@@ -13,8 +13,8 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="py-3 px-6">{{ __('ID') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('Product') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('Category') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Producto') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Categoría') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Precio compra') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Precio venta') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Stock') }}[{{ __('Units') }}] </th>
@@ -84,7 +84,7 @@
                 <x-input id="name" class="block mt-1 w-full" type="text" wire:model="name"
                     autocomplete="false" />
                 @error('name')
-                    <span class="error">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
             <div class="mt-4">
@@ -96,15 +96,15 @@
                     @endforeach
                 </select>
                 @error('category_id')
-                    <span class="error">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
             <div class="mt-4">
-                <x-label for="price_buy" value="{{ __('Price Buy') }}" />
+                <x-label for="price_buy" value="{{ __('Precio compra') }}" />
                 <x-input id="price_buy" class="block mt-1 w-full" type="text" wire:model="price_buy"
                     autocomplete="false" />
                 @error('price_buy')
-                    <span class="error">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
             <div class="mt-4">
@@ -112,7 +112,7 @@
                 <x-input id="price_sale" class="block mt-1 w-full" type="text" wire:model="price_sale"
                     autocomplete="false" />
                 @error('price_sale')
-                    <span class="error">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
             <div class="mt-4">
@@ -120,7 +120,7 @@
                 <x-input id="stock" class="block mt-1 w-full" type="text" wire:model="stock"
                     autocomplete="false" />
                 @error('stock')
-                    <span class="error">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
             <div class="mt-4">
@@ -128,7 +128,7 @@
                 <x-input id="stock_min" class="block mt-1 w-full" type="text" wire:model="stock_min"
                     autocomplete="false" />
                 @error('stock_min')
-                    <span class="error">{{ $message }}</span>
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
         </x-slot>

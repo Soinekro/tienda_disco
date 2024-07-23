@@ -1,6 +1,6 @@
 <div>
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        {{ __('Compras') }}
+        {{ __('Salidas') }}
     </h2>
     <x-button class="mt-4" wire:click="create">
         {{ __('Crear salida') }}
@@ -75,7 +75,7 @@
     @if ($modalFormVisible)
         <x-dialog-modal wire:model="modalFormVisible">
             <x-slot name="title">
-                {{ __('Guardar compra') }}
+                {{ __('Guardar salida') }}
             </x-slot>
             <x-slot name="content">
                 <div class="mt-4">
@@ -164,7 +164,7 @@
                         </div>
                         <div class="my-3">
                             <label for="quantityProduct" class="block text-sm font-medium text-gray-700">
-                                {{ __('Quantity') }}
+                                {{ __('Cantidad') }}
                             </label>
                             <input type="number" name="quantityProduct" id="quantityProduct"
                                 wire:model.live="quantityProduct"
@@ -175,8 +175,7 @@
                         </div>
                         <div class="my-3">
                             <label for="priceProduct" class="block text-sm font-medium text-gray-700">
-                                {{ __('Price') }}
-                                {{ __('Product') }}
+                                {{ __('Precio de producto') }}
                             </label>
                             <input type="number" name="priceProduct" id="priceProduct"
                                 wire:model.live="priceProduct"
@@ -187,7 +186,7 @@
                         </div>
                         <div class="my-3">
                             <label for="totalProduct" class="block text-sm font-medium text-gray-700">
-                                {{ __('Total Product') }}
+                                {{ __('Total de producto') }}
                             </label>
                             <input type="number" name="totalProduct" id="totalProduct"
                                 wire:model.live="totalProduct" disabled
@@ -199,7 +198,7 @@
                         <button wire:click="addProductToShop" wire:loading.attr="disabled"
                             wire:target="addProductToShop"
                             class="bg-blue-500 hover:bg-verde-300 text-white font-bold py-2 px-4 rounded float-right">
-                            {{ __('Add Product') }}
+                            {{ __('Añadir Producto') }}
                         </button>
                     </div>
                     @isset($details_products)
@@ -209,15 +208,15 @@
                                     <tr>
                                         <th
                                             class="m-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Name') }}
+                                            {{ __('Nombre') }}
                                         </th>
                                         <th
                                             class="m-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Quantity') }}
+                                            {{ __('Cantidad') }}
                                         </th>
                                         <th
                                             class="m-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Price') }}
+                                            {{ __('Precio') }}
                                         </th>
                                         <th
                                             class="m-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -263,6 +262,9 @@
                         </div>
                     @endisset
                 </div>
+                @error('details_products')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </x-slot>
             <x-slot name="footer">
                 <x-secondary-button wire:click="$toggle('modalFormVisible')" wire:loading.attr="disabled">
@@ -285,24 +287,24 @@
     @if ($showPaydSale)
         <x-dialog-modal wire:model="showPaydSale">
             <x-slot name="title">
-                {{ __('Payd Sale') }}
+                {{ __('Pagar salida') }}
             </x-slot>
             <x-slot name="content">
                 <div class=" bg-white rounded-xl shadow-xl overflow-x-auto p-1 m-auto">
                     <div class="grid grid-cols-1">
                         <div class="block xs:flex xs:justify-between">
                             <div class="text-xl font-bold text-gray-700 mx-2">
-                                {{ __('Date') }}:
+                                {{ __('Fecha') }}:
                                 {{ format_date($salePaid->created_at) }}
                             </div>
                             <div class="text-xl font-bold text-gray-700 mx-2">
-                                {{ __('Code') }}:
-                                {{ $salePaid->code }}
+                                {{ __('Código') }}:
+                                {{ $salePaid->getCode() }}
                             </div>
                         </div>
                         <div class="block xs:flex xs:justify-between">
                             <div class="text-xl font-bold text-gray-700 mx-2">
-                                {{ __('Client') }}:
+                                {{ __('Cliente') }}:
                                 {{ $salePaid->client->name ?? __('Not Client') }}
                             </div>
                             <div class="text-xl font-bold text-gray-700 mx-2">
@@ -313,7 +315,7 @@
                     </div>
                     {{-- formulario para ingresar el tipo de pago el monto, referencia --}}
                     <div class="bg-white rounded-xl shadow-xl overflow-x-auto p-1 mt-3 m-auto">
-                        {{ __('Sale Info') }}
+                        {{ __('Información de venta') }}
                         <div class="grid grid-cols-1">
                             <div class="block xs:flex xs:justify-between">
                                 <div class="text-xl font-bold text-gray-700 mx-2">
@@ -321,7 +323,7 @@
                                     {{ tramsform_cash($salePaid->details->sum('total')) }}
                                 </div>
                                 <div class="text-xl font-bold text-gray-700 mx-2">
-                                    {{ __('Pending') }}:
+                                    {{ __('Pendiente') }}:
                                     {{ tramsform_cash($salePaid->details->sum('total') - $salePaid->payments->sum('amount')) }}
                                 </div>
                             </div>
@@ -329,7 +331,7 @@
                         <div class="grid grid-cols-1">
                             <div class="block xs:flex xs:justify-between">
                                 <div class="text-xl font-bold text-gray-700 mx-2">
-                                    {{ __('Type') }}:
+                                    {{ __('Tipo') }}:
                                     <select wire:model.lazy="typePayment_id" id="typePayment_id"
                                         name="typePayment_id"
                                         class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs" type="button">
@@ -346,7 +348,7 @@
                                     @enderror
                                 </div>
                                 <div class="text-xl font-bold text-gray-700 mx-2">
-                                    {{ __('Amount') }}:
+                                    {{ __('Monto') }}:
                                     <input type="number" name="amount" id="amount" wire:model.live="amount"
                                         class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs">
                                     <br>
@@ -359,13 +361,13 @@
                             <div x-data="{ showEfective: @entangle('showEfective'), showTransfer: @entangle('showTransfer') }">
                                 <div class="block xs:flex xs:justify-between" x-show="showEfective">
                                     <div class="text-xl font-bold text-gray-700 mx-2">
-                                        {{ __('Paid With') }}:
+                                        {{ __('Paga con') }}:
                                         <input type="number" name="paidWith" id="paidWith" wire:model="paidWith"
                                             wire:keydown="paydSaleUpdate"
                                             class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs">
                                     </div>
                                     <div class="text-xl font-bold text-gray-700 mx-2">
-                                        {{ __('Turned') }}:
+                                        {{ __('Vuelto') }}:
                                         <input type="number" name="turned" id="turned" wire:model.lazy="turned"
                                             disabled class="rounded-lg border-4 border-blue-300 w-full md:max-w-xs">
                                     </div>
@@ -384,7 +386,7 @@
                     {{ __('Close') }}
                 </x-secondary-button>
                 <x-button class="ml-2" wire:click="paydSale" wire:loading.attr="disabled">
-                    {{ __('Payd') }}
+                    {{ __('Pagar') }}
                 </x-button>
             </x-slot>
         </x-dialog-modal>

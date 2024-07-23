@@ -44,4 +44,9 @@ class Sale extends Model
     {
         return $this->hasMany(SaleDetail::class);
     }
+
+    public function getCode()
+    {
+        return $this->serie . '-' . $this->correlative;
+    }
 }

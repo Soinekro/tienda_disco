@@ -80,7 +80,7 @@ class CategoryComponent extends Component
     public function rules()
     {
         return [
-            'name' => 'required|min:3',
+            'name' => 'required|min:3|unique:categories,name,' . $this->category_id,
         ];
     }
 

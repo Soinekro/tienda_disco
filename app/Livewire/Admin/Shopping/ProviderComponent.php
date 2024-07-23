@@ -51,12 +51,25 @@ class ProviderComponent extends Component
                 'phone' => 'required|numeric',
                 'email' => 'nullable|string|email',
 
+            ],
+            [
+                'ruc.required' => __('El campo RUC es obligatorio'),
+                'ruc.numeric' => __('El campo RUC debe ser numérico'),
+                'ruc.unique' => __('El campo RUC ya está en uso'),
+                'name.required' => __('El campo nombre es obligatorio'),
+                'name.min' => __('El campo nombre debe tener al menos 3 caracteres'),
+                'name.max' => __('El campo nombre debe tener como máximo 255 caracteres'),
+                'name.unique' => __('El campo nombre ya está en uso'),
+                'address.required' => __('El campo dirección es obligatorio'),
+                'phone.required' => __('El campo Teléfono es obligatorio'),
+                'phone.numeric' => __('El campo Teléfono debe ser numérico'),
+                'email.email' => __('El campo Email debe ser un correo válido'),
             ]
         );
         Provider::create($this->modelData());
         $this->modalFormVisible = false;
         $this->resetInputs();
-        $this->alertSuccess(__('Provider') . ' ' . ('created successfully!'));
+        $this->alertSuccess(__('Proveedor creado exitosamente!'));
     }
 
     public function resetInputs()
@@ -101,14 +114,14 @@ class ProviderComponent extends Component
         Provider::find($this->provider_id)->update($this->modelData());
         $this->modalFormVisible = false;
         $this->resetInputs();
-        $this->alertSuccess(__('Provider') . ' ' . ('updated successfully!'));
+        $this->alertSuccess(__('Proveedor actualizado exitosamente!'));
     }
 
     public function delete(Provider $product)
     {
         $product->delete();
         $this->resetPage();
-        $this->alertError(__('Provider') . ' ' . ('deleted successfully!'));
+        $this->alertError(__('Proveedor eliminado exitosamente!'));
     }
 
     public function modelData()

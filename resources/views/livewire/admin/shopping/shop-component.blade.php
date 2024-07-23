@@ -80,7 +80,7 @@
             <x-slot name="content">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div class="mt-4">
-                        <x-label for="code" value="{{ __('Code') }}" />
+                        <x-label for="code" value="{{ __('Código') }}" />
                         <x-input id="code" class="block mt-1 w-full" type="text" wire:model="code"
                             autocomplete="false" />
                         @error('code')
@@ -88,7 +88,7 @@
                         @enderror
                     </div>
                     <div class="mt-4">
-                        <x-label for="date" value="{{ __('Date') }}" />
+                        <x-label for="date" value="{{ __('Fecha') }}" />
                         <x-input id="date" class="block mt-1 w-full" type="date" wire:model="date"
                             autocomplete="false" />
                         @error('date')
@@ -205,7 +205,7 @@
                         </div>
                         <div class="my-3">
                             <label for="totalProduct" class="block text-sm font-medium text-gray-700">
-                                {{ __('Total Product') }}
+                                {{ __('Total producto') }}
                             </label>
                             <input type="number" name="totalProduct" id="totalProduct"
                                 wire:model.live="totalProduct" disabled

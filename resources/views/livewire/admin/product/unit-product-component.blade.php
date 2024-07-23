@@ -10,8 +10,8 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="py-3 px-6">{{ __('Code') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('Description') }} </th>
-                    <th scope="col" class="py-3 px-6">{{ __('Quantity') }} </th>
+                    <th scope="col" class="py-3 px-6">{{ __('Descripción') }} </th>
+                    <th scope="col" class="py-3 px-6">{{ __('Cantidad') }} </th>
                     <th scope="col" class="py-3 px-6">{{ __('Actions') }}</th>
                 </tr>
             </thead>
@@ -65,8 +65,7 @@
             <x-slot name="content">
                 <div class="grid grid-rows-2">
                     <label class="label-to-input">
-                        {{ __('Type') }}
-                        {{ __('Unit') }}
+                        {{ __('Tipo de unidad') }}
                     </label>
                     <select wire:model.lazy="unit_id" class="input-modal">
                         <option value="">{{ __('Select') . ' ' . __('Unit') }}</option>

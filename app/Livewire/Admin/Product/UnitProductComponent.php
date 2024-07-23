@@ -8,6 +8,7 @@ use App\Models\Unit;
 use App\Traits\Livewire\AlertsTrait;
 use App\Traits\Livewire\PaginateTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -27,7 +28,14 @@ class UnitProductComponent extends Component
     public function mount(Product $product)
     {
         $this->product = Product::find($product->id);
-        $this->units = DB::table('units')->select('id', 'name')->get();
+        $this->units = DB::table('units')
+            ->whereNotIn('id', function ($query) {
+                $query->select('unit_id')
+                    ->from('product_units')
+                    ->where('product_id', '=', $this->product->id);
+            })
+            ->select('id', 'name')
+            ->get();
     }
     public function render()
     {
@@ -52,21 +60,31 @@ class UnitProductComponent extends Component
     public function store()
     {
         // $this->authorize('admin.units.create');
-        $this->validate([
-            'unit_id' => 'required|exists:units,id|unique:product_units,unit_id,NULL,id,product_id,' . $this->product->id . ',quantity,' . $this->quantity,
-            'quantity' => 'required|numeric|min:1',
-        ]);
+        $this->validate(
+            [
+                'unit_id' => 'required|exists:units,id|unique:product_units,unit_id,NULL,id,product_id,' . $this->product->id . ',quantity,' . $this->quantity,
+                'quantity' => 'required|numeric|min:1',
+            ],
+            [
+                'unit_id.required' => __('La unidad es requerida!'),
+                'unit_id.exists' => __('La unidad no existe!'),
+                'unit_id.unique' => __('La unidad ya ha sido asignada a este producto!'),
+                'quantity.required' => __('La cantidad es requerida!'),
+                'quantity.numeric' => __('La cantidad debe ser un número!'),
+                'quantity.min' => __('La cantidad debe ser mayor a 0!'),
+            ]
+        );
         try {
             $this->product->productUnits()->create([
                 'unit_id' => $this->unit_id,
                 'quantity' => $this->quantity,
             ]);
         } catch (\Throwable $th) {
-            dd($th);
-            $this->alertError(__('Error creating unit!'));
+            Log::error($th);
+            $this->alertError(__('Error al crear una unidad'));
             return;
         }
-        $this->alertSuccess(__('Unit created successfully!'));
+        $this->alertSuccess(__('Unidad creada con éxito!'));
         $this->resetInputFields();
         $this->open = false;
     }
@@ -89,10 +107,18 @@ class UnitProductComponent extends Component
             [
                 'unit_id' => 'required|exists:units,id|unique:product_units,unit_id,' . $this->id . ',id,product_id,' . $this->product->id . ',quantity,' . $this->quantity,
                 'quantity' => 'required|numeric|min:1',
+            ],
+            [
+                'unit_id.required' => __('La unidad es requerida!'),
+                'unit_id.exists' => __('La unidad no existe!'),
+                'unit_id.unique' => __('La unidad ya ha sido asignada a este producto!'),
+                'quantity.required' => __('La cantidad es requerida!'),
+                'quantity.numeric' => __('La cantidad debe ser un número!'),
+                'quantity.min' => __('La cantidad debe ser mayor a 0!'),
             ]
         );
         if ($this->unit_id == 'NIU') {
-            $this->alertError(__('NIU can not be Edited!'));
+            $this->alertError(__('La unidad NIU no puede ser actualizada!'));
             return;
         }
         try {
@@ -100,23 +126,23 @@ class UnitProductComponent extends Component
                 'unit_id' => $this->unit_id,
                 'quantity' => $this->quantity,
             ]);
+            $this->alertSuccess(__('Unidad actualizada con éxito!'));
+            $this->resetInputFields();
+            $this->open = false;
         } catch (\Throwable $th) {
-            $this->alertError(__('Error updating unit!'));
+            $this->alertError(__('Error actualizando la unidad!'));
             return;
         }
-        $this->alertSuccess(__('Unit updated successfully!'));
-        $this->resetInputFields();
-        $this->open = false;
     }
     public function destroy(ProductUnit $unit)
     {
         // $this->authorize('admin.units.destroy');
-        if ($unit->id == 'NIU') {
-            $this->alertError(__('NIU can not be deleted!'));
+        if ($unit->unit_id == 'NIU') {
+            $this->alertError(__('La unidad NIU no puede ser eliminada!'));
             return;
         }
         $unit->delete();
-        $this->alertSuccess(__('Unit deleted successfully!'));
+        $this->alertSuccess(__('Unidad eliminada con exito!'));
     }
     public function resetInputFields()
     {
@@ -130,6 +156,8 @@ class UnitProductComponent extends Component
 
     public function updatedUnitId()
     {
-        $this->quantity = round(Unit::find($this->unit_id)->quantity);
+        if ($this->unit_id != null) {
+            $this->quantity = round(Unit::find($this->unit_id)->quantity);
+        }
     }
 }

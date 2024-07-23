@@ -4,14 +4,6 @@
             <div class="w-full grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
                 <!-- comparacion de movimientos entre ingresos y egresos -->
                 <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8  2xl:col-span-2">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex-shrink-0">
-                            <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
-                                {{ tramsform_cash($salesWeek[0]->total) }}
-                            </span>
-                            <h3 class="text-base font-normal text-gray-500">{{ __('Ventas semanales') }}</h3>
-                        </div>
-                    </div>
                     <div class="mt-4">
                         <h1 class="mt-4 text-xl font-bold text-gray-900 mb-2">
                             {{ $chartRevenue->options['chart_title'] }}
@@ -52,7 +44,7 @@
                                                 </th>
                                                 <th scope="col"
                                                     class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    {{ __('Amount') }}
+                                                    {{ __('Monto') }}
                                                 </th>
                                             </tr>
                                         </thead>
@@ -145,8 +137,8 @@
                     </div>
                 </div>
             </div> --}}
-            <div class="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
-                {{-- <div class="bg-white shadow rounded-lg mb-4 p-4 sm:p-6 h-full">
+            {{-- <div class="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
+                 <div class="bg-white shadow rounded-lg mb-4 p-4 sm:p-6 h-full">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xl font-bold leading-none text-gray-900">Latest Customers</h3>
                         <a href="#"
@@ -263,7 +255,7 @@
                             </li>
                         </ul>
                     </div>
-                </div> --}}
+                </div> 
                 <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
                     <h3 class="text-xl leading-none font-bold text-gray-900 mb-10">{{ __('Pagos mas usados') }}</h3>
                     <div class="block w-full overflow-x-auto">
@@ -309,7 +301,7 @@
                         </table>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </main>
 
@@ -320,9 +312,6 @@
         var char = @json($chartRevenue->getDatasets());
         var options = @json($chartRevenue->options);
         const jsonObject = char[0].data;
-        console.log(char);
-        console.log(options);
-        console.log(options.name);
         //recorrer el json de data y asignar los valores a un array
         const labels = [];
         const dataLabel = [];
@@ -333,13 +322,11 @@
                 dataLabel.push(jsonObject[item]);
             }
         }
-        console.log(labels);
-        console.log(dataLabel);
         const data = {
             labels: labels,
             datasets: [{
                 label: char[0].name,
-                backgroundColor: "black",
+                backgroundColor: "blue",
                 borderColor: 'rgb(0, 0, 0)',
                 data: dataLabel,
                 fill: false,

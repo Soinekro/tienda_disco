@@ -12,7 +12,7 @@
                 <tr>
                     <th scope="col" class="py-3 px-6">{{ __('ID') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Name') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('Products') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Productos') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Actions') }}</th>
                 </tr>
             </thead>

@@ -38,9 +38,9 @@ class DashboardComponent extends Component
     public function render()
     {
         $chart_options = [
-            'chart_title' => 'Ventas por día',
+            'chart_title' => 'Salidas por día',
             'report_type' => 'group_by_date',
-            'model' => 'App\Models\Sale',
+            'model' => 'App\Models\Shopping',
             'group_by_field' => 'created_at',
             'group_by_period' => 'day',
             'chart_type' => 'bar',

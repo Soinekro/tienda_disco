@@ -2,6 +2,7 @@
 
 namespace  App\Traits\Livewire;
 
+use App\Models\Client as ModelsClient;
 use App\Models\Provider;
 use App\Models\User;
 use GuzzleHttp\Client;
@@ -14,10 +15,10 @@ trait SearchDocument
         $token = config('services.api_dni_ruc.token');
         $url = config('services.api_dni_ruc.url');
 
-        $document_type = ($type == 'dni') ? '01' : '06';
+        $document_type = ($type == 'dni') ? 'DNI' : 'RUC';
 
         if ($type == 'dni') {
-            $user = User::where('dni', $number)
+            $user = ModelsClient::where('document_number', $number)
                 ->first();
         } else {
             $user = Provider::where('ruc', $number)
@@ -66,8 +67,9 @@ trait SearchDocument
                         'nombre' => $response['nombre'],
                     ];
                 } else {
-                    User::create([
-                        'dni' => $number,
+                    ModelsClient::create([
+                        'type_document' => $document_type,
+                        'document_number' => $number,
                         'username' => $number,
                         'name' => $response['nombres'] . ' ' . $response['apellidoPaterno'] . ' ' . $response['apellidoMaterno'],
                         'password' => Hash::make($number),
