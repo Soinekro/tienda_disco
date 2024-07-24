@@ -108,67 +108,75 @@
                 {{-- @endcan --}}
                 {{-- @can('admin.products.index') --}}
                 {{-- @endcan --}}
-                <div x-data="{ open: false }"
-                    @if (request()->is('admin/tienda*')) x-init="open = true"
-                            @else
-                            x-init="open = false" @endif
-                    class="relative">
-                    <x-admin.layouts.side-button @click="open = !open" :active="request()->is('admin/tienda*')">
-                        <x-slot name="icon">
-                            <template x-if="open">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ms-0.5" viewBox="0 0 448 512">
-                                    <path
-                                        d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z" />
-                                </svg>
-                            </template>
-                            <template x-if="!open">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ms-0.5" viewBox="0 0 448 512">
-                                    <path
-                                        d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
-                                </svg>
-                            </template>
-                        </x-slot>
-                        {{ __('Gestión de productos') }}
-                    </x-admin.layouts.side-button>
-                    <!-- Dropdown menu -->
-                    <div x-show="open" class="mt-0.5">
-                        <x-admin.layouts.side-button :active="request()->routeIs('admin.categories.index')" href="{{ route('admin.categories.index') }}">
+                @canany(['admin.categories.index', 'admin.products.index'])
+                    <div x-data="{ open: false }"
+                        @if (request()->is('admin/tienda*')) x-init="open = true"
+                        @else
+                        x-init="open = false" @endif
+                        class="relative">
+                        <x-admin.layouts.side-button @click="open = !open" :active="request()->is('admin/tienda*')">
                             <x-slot name="icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                                    class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
-                                        group-hover:text-gray-900 dark:group-hover:text-white"
-                                    viewBox="0 0 448 512">
-                                    <path
-                                        d="M0 80V229.5c0 17 6.7 33.3 18.7 45.3l176 176c25 25 65.5 25 90.5 0L418.7 317.3c25-25 25-65.5 0-90.5l-176-176c-12-12-28.3-18.7-45.3-18.7H48C21.5 32 0 53.5 0 80zm112 32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
-                                </svg>
+                                <template x-if="open">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ms-0.5" viewBox="0 0 448 512">
+                                        <path
+                                            d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z" />
+                                    </svg>
+                                </template>
+                                <template x-if="!open">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ms-0.5" viewBox="0 0 448 512">
+                                        <path
+                                            d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
+                                    </svg>
+                                </template>
                             </x-slot>
-                            {{ __('Categories') }}
+                            {{ __('Gestión de productos') }}
                         </x-admin.layouts.side-button>
-                        <x-admin.layouts.side-button :active="request()->routeIs('admin.products.index')" href="{{ route('admin.products.index') }}">
-                            <x-slot name="icon">
-                                <svg viewBox="0 0 24 24" fill="currentColor"
-                                    class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
-                                        group-hover:text-gray-900 dark:group-hover:text-white"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4.5 17V6H19.5V17H4.5Z" stroke="" stroke-width="1.5"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M4.5 6L6.5 2.00001L17.5 2L19.5 6" stroke="none" stroke-width="1.5" />
-                                    <path d="M10 9H14" stroke="#FFFFFF" stroke-width="1.5" />
-                                    <path
-                                        d="M11.9994 19.5V22M11.9994 19.5L6.99939 19.5M11.9994 19.5H16.9994M6.99939 19.5H1.99939V22M6.99939 19.5V22M16.9994 19.5H22L21.9994 22M16.9994 19.5V22"
-                                        stroke="#141B34" stroke-width="1.5" stroke-linejoin="round" />
-                                </svg>
-                            </x-slot>
-                            {{ __('Productos') }}
-                        </x-admin.layouts.side-button>
+                        <!-- Dropdown menu -->
+                        <div x-show="open" class="mt-0.5">
+                            @can('admin.categories.index')
+                                <x-admin.layouts.side-button :active="request()->routeIs('admin.categories.index')" href="{{ route('admin.categories.index') }}">
+                                    <x-slot name="icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                            class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
+                            group-hover:text-gray-900 dark:group-hover:text-white"
+                                            viewBox="0 0 448 512">
+                                            <path
+                                                d="M0 80V229.5c0 17 6.7 33.3 18.7 45.3l176 176c25 25 65.5 25 90.5 0L418.7 317.3c25-25 25-65.5 0-90.5l-176-176c-12-12-28.3-18.7-45.3-18.7H48C21.5 32 0 53.5 0 80zm112 32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+                                        </svg>
+                                    </x-slot>
+                                    {{ __('Categories') }}
+                                </x-admin.layouts.side-button>
+                            @endcan
+                            @can('admin.products.index')
+                                <x-admin.layouts.side-button :active="request()->routeIs('admin.products.index')" href="{{ route('admin.products.index') }}">
+                                    <x-slot name="icon">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"
+                                            class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
+                            group-hover:text-gray-900 dark:group-hover:text-white"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 17V6H19.5V17H4.5Z" stroke="" stroke-width="1.5"
+                                                stroke-linecap="round" stroke-linejoin="round" />
+                                            <path d="M4.5 6L6.5 2.00001L17.5 2L19.5 6" stroke="none" stroke-width="1.5" />
+                                            <path d="M10 9H14" stroke="#FFFFFF" stroke-width="1.5" />
+                                            <path
+                                                d="M11.9994 19.5V22M11.9994 19.5L6.99939 19.5M11.9994 19.5H16.9994M6.99939 19.5H1.99939V22M6.99939 19.5V22M16.9994 19.5H22L21.9994 22M16.9994 19.5V22"
+                                                stroke="#141B34" stroke-width="1.5" stroke-linejoin="round" />
+                                        </svg>
+                                    </x-slot>
+                                    {{ __('Productos') }}
+                                </x-admin.layouts.side-button>
+                            @endcan
+                        </div>
                     </div>
-                </div>
+                @endcanany
+                {{-- usuarios --}}
+                {{-- @canany(['admin.users.index', 'admin.roles.index']) --}}
                 <div x-data="{ open: false }"
-                    @if (request()->is('admin/movimientos*')) x-init="open = true"
+                    @if (request()->is('admin/users*')) x-init="open = true"
                             @else
                             x-init="open = false" @endif
                     class="relative">
-                    <x-admin.layouts.side-button @click="open = !open" :active="request()->is('admin/movimientos*')">
+                    <x-admin.layouts.side-button @click="open = !open" :active="request()->is('admin/users*')">
                         <x-slot name="icon">
                             <template x-if="open">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ms-0.5" viewBox="0 0 448 512">
@@ -183,49 +191,112 @@
                                 </svg>
                             </template>
                         </x-slot>
-                        {{ __('Movimientos') }}
+                        {{ __('Gestión de usuarios') }}
                     </x-admin.layouts.side-button>
                     <!-- Dropdown menu -->
                     <div x-show="open" class="mt-0.5">
-                        <x-admin.layouts.side-button :active="request()->routeIs('admin.providers.index')" href="{{ route('admin.providers.index') }}">
+                        {{-- @can('admin.roles.index') --}}
+                        <x-admin.layouts.side-button :active="request()->routeIs('admin.roles.index')" href="{{ route('admin.roles.index') }}">
                             <x-slot name="icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                                     class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
-                                        group-hover:text-gray-900 dark:group-hover:text-white"
-                                    viewBox="0 0 448 512">
+                            group-hover:text-gray-900 dark:group-hover:text-white"
+                                    viewBox="0 0 640 512">
                                     <path
-                                        d="M0 80V229.5c0 17 6.7 33.3 18.7 45.3l176 176c25 25 65.5 25 90.5 0L418.7 317.3c25-25 25-65.5 0-90.5l-176-176c-12-12-28.3-18.7-45.3-18.7H48C21.5 32 0 53.5 0 80zm112 32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+                                        d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c10 0 18.8-4.9 24.2-12.5l-99.2-99.2c-14.9-14.9-23.3-35.1-23.3-56.1l0-33c-15.9-4.7-32.8-7.2-50.3-7.2l-91.4 0zM384 224c-17.7 0-32 14.3-32 32l0 82.7c0 17 6.7 33.3 18.7 45.3L478.1 491.3c18.7 18.7 49.1 18.7 67.9 0l73.4-73.4c18.7-18.7 18.7-49.1 0-67.9L512 242.7c-12-12-28.3-18.7-45.3-18.7L384 224zm24 80a24 24 0 1 1 48 0 24 24 0 1 1 -48 0z" />
                                 </svg>
                             </x-slot>
-                            {{ __('Providers') }}
+                            {{ __('Roles') }}
                         </x-admin.layouts.side-button>
-                        <x-admin.layouts.side-button :active="request()->routeIs('admin.shoppings.index')" href="{{ route('admin.shoppings.index') }}">
+                        {{-- @endcan --}}
+                        {{-- @can('admin.users.index') --}}
+                        <x-admin.layouts.side-button :active="request()->routeIs('admin.users.index')" href="{{ route('admin.users.index') }}">
                             <x-slot name="icon">
                                 <svg xmlns="http://www.w3.org/2000/svg"
                                     class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
-                                        group-hover:text-gray-900 dark:group-hover:text-white"
+                                    group-hover:text-gray-900 dark:group-hover:text-white"
                                     viewBox="0 0 640 512">
                                     <path
-                                        d="M640 0l0 400c0 61.9-50.1 112-112 112c-61 0-110.5-48.7-112-109.3L48.4 502.9c-17.1 4.6-34.6-5.4-39.3-22.5s5.4-34.6 22.5-39.3L352 353.8 352 64c0-35.3 28.7-64 64-64L640 0zM576 400a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM23.1 207.7c-4.6-17.1 5.6-34.6 22.6-39.2l46.4-12.4 20.7 77.3c2.3 8.5 11.1 13.6 19.6 11.3l30.9-8.3c8.5-2.3 13.6-11.1 11.3-19.6l-20.7-77.3 46.4-12.4c17.1-4.6 34.6 5.6 39.2 22.6l41.4 154.5c4.6 17.1-5.6 34.6-22.6 39.2L103.7 384.9c-17.1 4.6-34.6-5.6-39.2-22.6L23.1 207.7z" />
+                                        d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z" />
                                 </svg>
                             </x-slot>
-                            {{ __('Entradas') }}
+                            {{ __('Usuarios') }}
                         </x-admin.layouts.side-button>
-                        <!-- salidas -->
-                        <x-admin.layouts.side-button :active="request()->routeIs('admin.sales.index')" href="{{ route('admin.sales.index') }}">
-                            <x-slot name="icon">
-                                <svg xmlns="http://www.w3.org/2000/svg"fill="currentColor"
-                                    class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
-                                    group-hover:text-gray-900 dark:group-hover:text-white"
-                                    viewBox="0 0 576 512">
-                                    <path
-                                        d="M24 0C10.7 0 0 10.7 0 24S10.7 48 24 48l45.5 0c3.8 0 7.1 2.7 7.9 6.5l51.6 271c6.5 34 36.2 58.5 70.7 58.5L488 384c13.3 0 24-10.7 24-24s-10.7-24-24-24l-288.3 0c-11.5 0-21.4-8.2-23.6-19.5L170.7 288l288.5 0c32.6 0 61.1-21.8 69.5-53.3l41-152.3C576.6 57 557.4 32 531.1 32L360 32l0 102.1 23-23c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-64 64c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l23 23L312 32 120.1 32C111 12.8 91.6 0 69.5 0L24 0zM176 512a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm336-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0z" />
-                                </svg>
-                            </x-slot>
-                            {{ __('Salidas') }}
-                        </x-admin.layouts.side-button>
+                        {{-- @endcan --}}
                     </div>
                 </div>
+                {{-- @endcanany --}}
+                @canany(['admin.providers.index', 'admin.compras.index', 'admin.salidas.index'])
+                    <div x-data="{ open: false }"
+                        @if (request()->is('admin/movimientos*')) x-init="open = true"
+                            @else
+                            x-init="open = false" @endif
+                        class="relative">
+                        <x-admin.layouts.side-button @click="open = !open" :active="request()->is('admin/movimientos*')">
+                            <x-slot name="icon">
+                                <template x-if="open">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ms-0.5" viewBox="0 0 448 512">
+                                        <path
+                                            d="M201.4 137.4c12.5-12.5 32.8-12.5 45.3 0l160 160c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L224 205.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160z" />
+                                    </svg>
+                                </template>
+                                <template x-if="!open">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ms-0.5" viewBox="0 0 448 512">
+                                        <path
+                                            d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
+                                    </svg>
+                                </template>
+                            </x-slot>
+                            {{ __('Movimientos') }}
+                        </x-admin.layouts.side-button>
+                        <!-- Dropdown menu -->
+                        <div x-show="open" class="mt-0.5">
+                            @can('admin.providers.index')
+                                <x-admin.layouts.side-button :active="request()->routeIs('admin.providers.index')" href="{{ route('admin.providers.index') }}">
+                                    <x-slot name="icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                            class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
+                                group-hover:text-gray-900 dark:group-hover:text-white"
+                                            viewBox="0 0 448 512">
+                                            <path
+                                                d="M0 80V229.5c0 17 6.7 33.3 18.7 45.3l176 176c25 25 65.5 25 90.5 0L418.7 317.3c25-25 25-65.5 0-90.5l-176-176c-12-12-28.3-18.7-45.3-18.7H48C21.5 32 0 53.5 0 80zm112 32a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
+                                        </svg>
+                                    </x-slot>
+                                    {{ __('Providers') }}
+                                </x-admin.layouts.side-button>
+                            @endcan
+                            @can('admin.compras.index')
+                                <x-admin.layouts.side-button :active="request()->routeIs('admin.shoppings.index')" href="{{ route('admin.shoppings.index') }}">
+                                    <x-slot name="icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
+                                    group-hover:text-gray-900 dark:group-hover:text-white"
+                                            viewBox="0 0 640 512">
+                                            <path
+                                                d="M640 0l0 400c0 61.9-50.1 112-112 112c-61 0-110.5-48.7-112-109.3L48.4 502.9c-17.1 4.6-34.6-5.4-39.3-22.5s5.4-34.6 22.5-39.3L352 353.8 352 64c0-35.3 28.7-64 64-64L640 0zM576 400a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM23.1 207.7c-4.6-17.1 5.6-34.6 22.6-39.2l46.4-12.4 20.7 77.3c2.3 8.5 11.1 13.6 19.6 11.3l30.9-8.3c8.5-2.3 13.6-11.1 11.3-19.6l-20.7-77.3 46.4-12.4c17.1-4.6 34.6 5.6 39.2 22.6l41.4 154.5c4.6 17.1-5.6 34.6-22.6 39.2L103.7 384.9c-17.1 4.6-34.6-5.6-39.2-22.6L23.1 207.7z" />
+                                        </svg>
+                                    </x-slot>
+                                    {{ __('Entradas') }}
+                                </x-admin.layouts.side-button>
+                            @endcan
+                            @can('admin.salidas.index')
+                                <!-- salidas -->
+                                <x-admin.layouts.side-button :active="request()->routeIs('admin.sales.index')" href="{{ route('admin.sales.index') }}">
+                                    <x-slot name="icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg"fill="currentColor"
+                                            class="flex-shrink-0 w-5 h-5 transition duration-75 dark:text-gray-400
+                                group-hover:text-gray-900 dark:group-hover:text-white"
+                                            viewBox="0 0 576 512">
+                                            <path
+                                                d="M24 0C10.7 0 0 10.7 0 24S10.7 48 24 48l45.5 0c3.8 0 7.1 2.7 7.9 6.5l51.6 271c6.5 34 36.2 58.5 70.7 58.5L488 384c13.3 0 24-10.7 24-24s-10.7-24-24-24l-288.3 0c-11.5 0-21.4-8.2-23.6-19.5L170.7 288l288.5 0c32.6 0 61.1-21.8 69.5-53.3l41-152.3C576.6 57 557.4 32 531.1 32L360 32l0 102.1 23-23c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-64 64c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l23 23L312 32 120.1 32C111 12.8 91.6 0 69.5 0L24 0zM176 512a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm336-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0z" />
+                                        </svg>
+                                    </x-slot>
+                                    {{ __('Salidas') }}
+                                </x-admin.layouts.side-button>
+                            @endcan
+                        </div>
+                    </div>
+                @endcanany
             </ul>
         </div>
     </aside>

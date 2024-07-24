@@ -134,7 +134,6 @@ class SaleComponent extends Component
             $this->provider_id = $provider->id;
         } else {
             $response = $this->searchDocument($tDoc, $this->ruc);
-            // dd($response);
             if ($response['success']) {
                 $this->name_provider = $response['nombre'];
             } else {
