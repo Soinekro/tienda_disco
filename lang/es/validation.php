@@ -198,6 +198,7 @@ return [
         'is_subscribed'            => 'está suscrito',
         'is_visible'               => 'es visible',
         'is_winner'                => 'es ganador',
+        'permissions_picked'       => 'permisos',
         'items'                    => 'elementos',
         'key'                      => 'clave',
         'last_name'                => 'apellidos',
