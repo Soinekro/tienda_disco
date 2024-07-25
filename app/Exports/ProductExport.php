@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class ProductExport implements FromCollection, WithHeadings,WithColumnWidths
+class ProductExport implements FromCollection, WithHeadings, WithColumnWidths
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -22,8 +22,8 @@ class ProductExport implements FromCollection, WithHeadings,WithColumnWidths
                 'products.price_buy',
                 'products.price_sale',
                 'products.stock',
-                'products.stock_min',
             )
+            ->orderBy('products.id', 'desc')
             ->get();
     }
 
@@ -31,12 +31,11 @@ class ProductExport implements FromCollection, WithHeadings,WithColumnWidths
     {
         return [
             'ID',
-            'Name',
-            'Category',
-            'Price Buy',
-            'Price Sale',
+            'Nombre',
+            'Categoría',
+            'Precio de compra',
+            'Precio de venta',
             'Stock',
-            'Stock Min',
         ];
     }
 
