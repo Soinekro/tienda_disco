@@ -18,15 +18,17 @@ class CategoryComponent extends Component
 
     public function render()
     {
+        $this->authorize('admin.categories.index');
         $categories = Category::with('products')
-        ->orderBy($this->sort,$this->direction)
-        ->paginate($this->perPage);
-        return view('livewire.admin.category.category-component',compact('categories'));
+            ->orderBy($this->sort, $this->direction)
+            ->paginate($this->perPage);
+        return view('livewire.admin.category.category-component', compact('categories'));
     }
 
 
     public function create()
     {
+        $this->authorize('admin.categories.create');
         $this->resetValidation();
         $this->reset();
         $this->modalFormVisible = true;
@@ -35,6 +37,7 @@ class CategoryComponent extends Component
 
     public function edit($id)
     {
+        $this->authorize('admin.categories.edit');
         $this->resetValidation();
         $this->reset();
         $this->modalFormVisible = true;
@@ -51,6 +54,7 @@ class CategoryComponent extends Component
 
     public function store()
     {
+        $this->authorize('admin.categories.create');
         $this->validate();
         Category::create($this->modelData());
         $this->modalFormVisible = false;
@@ -59,6 +63,7 @@ class CategoryComponent extends Component
 
     public function update()
     {
+        $this->authorize('admin.categories.edit');
         $this->validate();
         Category::find($this->category_id)->update($this->modelData());
         $this->modalFormVisible = false;
@@ -74,6 +79,7 @@ class CategoryComponent extends Component
 
     public function delete($id)
     {
+        $this->authorize('admin.categories.destroy');
         Category::destroy($id);
     }
 
@@ -96,6 +102,4 @@ class CategoryComponent extends Component
     {
         return 'vendor.livewire.bootstrap';
     }
-
-
 }

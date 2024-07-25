@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Users;
 
 use App\Traits\Livewire\AlertsTrait;
+use App\Traits\Livewire\PaginateTrait;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -13,9 +14,8 @@ use Spatie\Permission\Models\Role;
 
 class RoleComponent extends Component
 {
-
-    use WithPagination;
     use AlertsTrait;
+    use PaginateTrait;
 
     public $open = false;
     public $role_id;

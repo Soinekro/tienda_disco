@@ -23,7 +23,8 @@ class ProviderComponent extends Component
 
     public function render()
     {
-        $providers = Provider::orderBy($this->sort, $this->direction)->paginate($this->perPage);
+        $providers = Provider::orderBy($this->sort, $this->direction)
+        ->paginate($this->perPage);
         return view('livewire.admin.shopping.provider-component', compact('providers'));
     }
 

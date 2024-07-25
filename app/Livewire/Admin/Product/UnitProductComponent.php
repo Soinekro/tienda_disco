@@ -39,6 +39,7 @@ class UnitProductComponent extends Component
     }
     public function render()
     {
+        $this->authorize('admin.products.index');
         $product_units = DB::table('product_units')
             ->join('units', 'product_units.unit_id', '=', 'units.id')
             ->select('product_units.id', 'units.id as idUnit', 'product_units.quantity', 'units.name')
@@ -52,14 +53,14 @@ class UnitProductComponent extends Component
     //---------------------------------------------------------------------------------------------------------------------------------------------------------
     public function create()
     {
-        // $this->authorize('admin.units.create');
+        $this->authorize('admin.products.create');
         $this->resetInputFields();
         $this->open = true;
     }
 
     public function store()
     {
-        // $this->authorize('admin.units.create');
+        $this->authorize('admin.products.create');
         $this->validate(
             [
                 'unit_id' => 'required|exists:units,id|unique:product_units,unit_id,NULL,id,product_id,' . $this->product->id . ',quantity,' . $this->quantity,
@@ -92,7 +93,7 @@ class UnitProductComponent extends Component
     public function edit(ProductUnit $unit)
     {
         $this->resetInputFields();
-        // $this->authorize('admin.units.edit');
+        $this->authorize('admin.products.edit');
         $this->unit_id = $unit->unit_id;
         $this->quantity = $unit->quantity;
         $this->id = $unit->id;
@@ -102,7 +103,7 @@ class UnitProductComponent extends Component
 
     public function update()
     {
-        // $this->authorize('admin.units.edit');
+        $this->authorize('admin.products.edit');
         $this->validate(
             [
                 'unit_id' => 'required|exists:units,id|unique:product_units,unit_id,' . $this->id . ',id,product_id,' . $this->product->id . ',quantity,' . $this->quantity,
@@ -136,7 +137,7 @@ class UnitProductComponent extends Component
     }
     public function destroy(ProductUnit $unit)
     {
-        // $this->authorize('admin.units.destroy');
+        $this->authorize('admin.products.destroy');
         if ($unit->unit_id == 'NIU') {
             $this->alertError(__('La unidad NIU no puede ser eliminada!'));
             return;

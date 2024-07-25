@@ -94,14 +94,6 @@
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>
-            {{-- <div class="mt-4">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="text" wire:model="email"
-                    autocomplete="false" />
-                @error('email')
-                    <span class="error">{{ $message }}</span>
-                @enderror
-            </div> --}}
         </x-slot>
 
         <x-slot name="footer">
@@ -109,16 +101,9 @@
                 {{ __('Cancel') }}
             </x-secondary-button>
 
-            {{-- @if ($user_id)
-                <x-button class="ml-2" wire:click="update" wire:loading.attr="disabled">
-                    {{ __('Update') }}
-                </x-button>
-            @else --}}
-                <x-button class="ml-2" wire:click="save" wire:loading.attr="disabled" wire:target="save">
-                    {{ __('Create') }}
-                </x-button>
-            {{-- @endif --}}
-
+            <x-button class="ml-2" wire:click="save" wire:loading.attr="disabled" wire:target="save">
+                {{ __('Create') }}
+            </x-button>
         </x-slot>
     </x-dialog-modal>
 

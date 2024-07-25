@@ -38,6 +38,7 @@ class ProductComponent extends Component
     }
     public function render()
     {
+        $this->authorize('admin.products.index');
         $products = Product::with('category')
             ->orderBy($this->sort, $this->direction)
             ->paginate($this->perPage);
@@ -47,6 +48,7 @@ class ProductComponent extends Component
 
     public function create()
     {
+        $this->authorize('admin.products.create');
         $this->resetValidation();
         $this->resetInputs();
         $this->modalFormVisible = true;
@@ -61,6 +63,7 @@ class ProductComponent extends Component
 
     public function store()
     {
+        $this->authorize('admin.products.create');
         $this->validate(
             [
                 'name' => 'required|min:3',
@@ -112,6 +115,7 @@ class ProductComponent extends Component
     }
     public function edit($id)
     {
+        $this->authorize('admin.products.edit');
         $this->resetValidation();
         $this->resetInputs();
         $this->product_id = $id;
@@ -127,6 +131,7 @@ class ProductComponent extends Component
 
     public function update()
     {
+        $this->authorize('admin.products.edit');
         $this->validate(
             [
                 'category_id' => 'required|exists:categories,id,' . $this->category_id,
@@ -165,6 +170,7 @@ class ProductComponent extends Component
 
     public function delete(Product $product)
     {
+        $this->authorize('admin.products.destroy');
         $product->delete();
         $this->resetPage();
         $this->alertError(__('Producto eliminado con éxito!'));

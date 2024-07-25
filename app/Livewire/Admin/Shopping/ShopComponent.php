@@ -59,6 +59,7 @@ class ShopComponent extends Component
 
     public function render()
     {
+        $this->authorize('admin.compras.index');
         $shoppings = Shopping::with('provider', 'user')
             ->orderBy('shoppings.' . $this->sort, $this->direction)
             ->paginate($this->perPage);
@@ -94,6 +95,7 @@ class ShopComponent extends Component
     }
     public function create()
     {
+        $this->authorize('admin.compras.create');
         $this->resetInputs();
         session()->forget('compras');
         $this->categories = DB::table('categories')->select('id', 'name')->get();
@@ -201,7 +203,6 @@ class ShopComponent extends Component
 
     public function addProductToShop()
     {
-        // dd($this->productPick, $this->quantityProduct, $this->priceProduct, $this->totalProduct);
         $this->validate(
             [
                 'productPick' => 'required',
@@ -294,7 +295,6 @@ class ShopComponent extends Component
 
     public function deleteProduct($id)
     {
-
         DB::beginTransaction();
         try {
             if ($this->shop_id) {
@@ -331,6 +331,7 @@ class ShopComponent extends Component
 
     public function store()
     {
+        $this->authorize('admin.compras.create');
         $this->validate(
             [
                 'details_products' => 'required|array|min:1',
@@ -403,6 +404,7 @@ class ShopComponent extends Component
 
     public function delete(Shopping $shopping)
     {
+        $this->authorize('admin.compras.destroy');
         if ($shopping) {
             //descontar stock
             DB::beginTransaction();
@@ -426,6 +428,7 @@ class ShopComponent extends Component
 
     public function edit(Shopping $shopping)
     {
+        $this->authorize('admin.compras.edit');
         $this->resetInputs();
         $this->categories = DB::table('categories')->select('id', 'name')->get();
         $this->shop_id = $shopping->id;

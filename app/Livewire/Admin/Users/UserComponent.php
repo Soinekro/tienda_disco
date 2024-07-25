@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Users;
 
 use App\Models\User;
 use App\Traits\Livewire\AlertsTrait;
+use App\Traits\Livewire\PaginateTrait;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +17,7 @@ class UserComponent extends Component
 
     use WithPagination;
     use AlertsTrait;
+    use PaginateTrait;
 
     public $open = false;
     public $user_id;
@@ -27,18 +29,23 @@ class UserComponent extends Component
 
     public function render()
     {
-        $users = User::all();
+        $this->authorize('admin.users.index');
+        $users = User::orderBy($this->sort, $this->direction)
+            ->paginate($this->perPage);
         return view('livewire.admin.users.user-component', compact('users'));
     }
 
     public function create()
     {
+        $this->authorize('admin.users.create');
         $this->reset('name', 'username', 'email', 'phone', 'user_id', 'user');
         $this->open = true;
     }
 
     public function save()
     {
+        $this->user_id ? $this->authorize('admin.users.edit') : $this->authorize('admin.users.create');
+
         $this->validate([
             'name' => 'required|string',
             'username' => 'required|string|unique:users,username,' . $this->user_id,
@@ -72,6 +79,7 @@ class UserComponent extends Component
 
     public function edit(User $user)
     {
+        $this->authorize('admin.users.edit');
         $this->open = true;
         $this->user = $user;
         $this->user_id = $this->user->id;
@@ -80,6 +88,7 @@ class UserComponent extends Component
 
     public function delete(User $user)
     {
+        $this->authorize('admin.users.delete');
         DB::beginTransaction();
         try {
             $user->delete();

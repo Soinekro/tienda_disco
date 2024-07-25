@@ -76,6 +76,7 @@ class SaleComponent extends Component
 
     public function render()
     {
+        $this->authorize('admin.salidas.index');
         $salesDB = Sale::orderBy($this->sort, $this->direction)
             ->paginate($this->perPage);
         return view('livewire.admin.sale.sale-component', compact('salesDB'));
@@ -109,6 +110,7 @@ class SaleComponent extends Component
     }
     public function create()
     {
+        $this->authorize('admin.salidas.create');
         $this->resetInputs();
         $this->categories = DB::table('categories')->select('id', 'name')->get();
         $this->modalFormVisible = true;
@@ -300,7 +302,6 @@ class SaleComponent extends Component
 
     public function deleteProduct($id)
     {
-
         DB::beginTransaction();
         try {
             if ($this->sale_id) {
@@ -337,6 +338,7 @@ class SaleComponent extends Component
 
     public function store()
     {
+        $this->authorize('admin.salidas.create');
         $this->validate([
             'details_products' => 'required|array|min:1',
             'total' => 'required|numeric|min:0',
@@ -393,6 +395,7 @@ class SaleComponent extends Component
 
     public function delete(Sale $sale)
     {
+        $this->authorize('admin.salidas.destroy');
         if ($sale) {
             //descontar stock
             DB::beginTransaction();
@@ -417,6 +420,7 @@ class SaleComponent extends Component
 
     public function edit(Sale $sale)
     {
+        $this->authorize('admin.salidas.edit');
         $this->resetInputs();
         $this->categories = DB::table('categories')->select('id', 'name')->get();
         $this->sale_id = $sale->id;
@@ -457,6 +461,7 @@ class SaleComponent extends Component
 
     public function update()
     {
+        $this->authorize('admin.salidas.edit');
         $this->validate([
             'total' => 'required|numeric|min:0',
         ]);
@@ -476,7 +481,7 @@ class SaleComponent extends Component
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e->getMessage());
-            $this->alerterror(__($e->getMessage()));
+            $this->alerterror(__('Error al actualizar'));
             return;
         }
     }
@@ -506,14 +511,14 @@ class SaleComponent extends Component
                 'type' => Sale::TYPE,
             ]);
             if ($this->amount == $this->salePaid->total) {
-                $this->salePaid->status = Sale::COMPLETED;
+                $this->salePaid->status = Sale::PAID;
             } else {
-                $this->salePaid->status = Sale::PENDING;
+                $this->salePaid->status = Sale::GENERATE;
             }
             $this->salePaid->update();
             DB::commit();
             $this->cancelPaydSale();
-            $this->alertSuccess(__('Sale') . ' ' . ('paid successfully!'));
+            $this->alertSuccess(__('Venta pagada correctamente'));
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error($e->getMessage());
