@@ -12,7 +12,7 @@
                     <th scope="col" class="py-3 px-6">{{ __('Nombre') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Usuario') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Correo') }}</th>
-                    <th scope="col" class="py-3 px-6">{{ __('Numero') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Número') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Actions') }}</th>
                 </tr>
             </thead>
@@ -32,14 +32,6 @@
                             {{ $item->phone }}
                         </td>
                         <td class="py-4 px-6">
-                            {{-- <button class="bg-amber-500 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded"
-                                wire:click="toUnits({{ $item->id }})">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" class="w-6 h-6 mx-auto svg-dark"
-                                    viewBox="0 0 576 512">
-                                    <path
-                                        d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z" />
-                                </svg>
-                            </button> --}}
                             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                 wire:click="edit({{ $item->id }})">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="1em" class="w-6 h-6 mx-auto svg-dark"
@@ -64,20 +56,12 @@
     </div>
 
     <!-- Modal Form -->
-    {{-- <x-dialog-modal wire:model="modalFormVisible">
+    <x-dialog-modal wire:model="open">
         <x-slot name="title">
-            {{ __('Save') }} {{ __('provider') }}
+            {{ __('Usuarios') }}
         </x-slot>
 
         <x-slot name="content">
-            <div class="mt-4">
-                <x-label for="ruc" value="{{ __('RUC') }}" />
-                <x-input id="ruc" class="block mt-1 w-full" type="text" wire:model="ruc"
-                    autocomplete="false" />
-                @error('ruc')
-                    <span class="error">{{ $message }}</span>
-                @enderror
-            </div>
             <div class="mt-4">
                 <x-label for="name" value="{{ __('Name') }}" />
                 <x-input id="name" class="block mt-1 w-full" type="text" wire:model="name"
@@ -87,18 +71,10 @@
                 @enderror
             </div>
             <div class="mt-4">
-                <x-label for="address" value="{{ __('Address') }}" />
-                <x-input id="address" class="block mt-1 w-full" type="text" wire:model="address"
+                <x-label for="username" value="{{ __('Username') }}" />
+                <x-input id="username" class="block mt-1 w-full" type="text" wire:model="username"
                     autocomplete="false" />
-                @error('address')
-                    <span class="error">{{ $message }}</span>
-                @enderror
-            </div>
-            <div class="mt-4">
-                <x-label for="phone" value="{{ __('Phone') }}" />
-                <x-input id="phone" class="block mt-1 w-full" type="text" wire:model="phone"
-                    autocomplete="false" />
-                @error('phone')
+                @error('username')
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>
@@ -110,26 +86,41 @@
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>
-
+            <div class="mt-4">
+                <x-label for="phone" value="{{ __('Phone') }}" />
+                <x-input id="phone" class="block mt-1 w-full" type="text" wire:model="phone"
+                    autocomplete="false" />
+                @error('phone')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div>
+            {{-- <div class="mt-4">
+                <x-label for="email" value="{{ __('Email') }}" />
+                <x-input id="email" class="block mt-1 w-full" type="text" wire:model="email"
+                    autocomplete="false" />
+                @error('email')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div> --}}
         </x-slot>
 
         <x-slot name="footer">
-            <x-secondary-button wire:click="$toggle('modalFormVisible')" wire:loading.attr="disabled">
+            <x-secondary-button wire:click="$toggle('open')" wire:loading.attr="disabled">
                 {{ __('Cancel') }}
             </x-secondary-button>
 
-            @if ($user_id)
+            {{-- @if ($user_id)
                 <x-button class="ml-2" wire:click="update" wire:loading.attr="disabled">
                     {{ __('Update') }}
                 </x-button>
-            @else
-                <x-button class="ml-2" wire:click="store" wire:loading.attr="disabled">
+            @else --}}
+                <x-button class="ml-2" wire:click="save" wire:loading.attr="disabled" wire:target="save">
                     {{ __('Create') }}
                 </x-button>
-            @endif
+            {{-- @endif --}}
 
         </x-slot>
-    </x-dialog-modal> --}}
+    </x-dialog-modal>
 
     @section('scripts')
         <script>
