@@ -94,6 +94,22 @@
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>
+
+            {{-- roles --}}
+            <div>
+                <x-label for="roles" value="{{ __('Roles') }}" />
+                <select id="role_id" class="block mt-1 w-full" wire:model="role_id">
+                    <option value="">{{ __('Seleccione un rol') }}</option>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role->id }}" @selected($role->id == $role_id)>
+                            {{ $role->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('role_id')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div>
         </x-slot>
 
         <x-slot name="footer">
