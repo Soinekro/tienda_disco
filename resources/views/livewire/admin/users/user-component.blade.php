@@ -53,6 +53,11 @@
                 @endforeach
             </tbody>
         </table>
+        {{-- links --}}
+        <div
+            class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            {{ $users->links() }}
+        </div>
     </div>
 
     <!-- Modal Form -->
@@ -91,6 +96,20 @@
                 <x-input id="phone" class="block mt-1 w-full" type="text" wire:model="phone"
                     autocomplete="false" />
                 @error('phone')
+                    <span class="error">{{ $message }}</span>
+                @enderror
+            </div>
+            <div class="mt-4">
+                <x-label for="roles" value="{{ __('Roles') }}" />
+                <select name="role_id" id="role_id" class="block mt-1 w-full">
+                    <option value="">{{ __('Seleccione un rol') }}</option>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role->id }}" @if ($role_id == $role->id) selected @endif>
+                            {{ $role->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('role_id')
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>

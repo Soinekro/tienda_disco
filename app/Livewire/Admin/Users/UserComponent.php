@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Spatie\Permission\Models\Role;
 
 class UserComponent extends Component
 {
@@ -27,6 +28,8 @@ class UserComponent extends Component
     public $email;
     public $phone;
 
+    public $roles = [];
+    public $role_id = null;
     public function render()
     {
         $this->authorize('admin.users.index');
@@ -39,6 +42,8 @@ class UserComponent extends Component
     {
         $this->authorize('admin.users.create');
         $this->reset('name', 'username', 'email', 'phone', 'user_id', 'user');
+        $this->roles = Role::select('id', 'name')
+            ->get();
         $this->open = true;
     }
 
@@ -51,11 +56,23 @@ class UserComponent extends Component
             'username' => 'required|string|unique:users,username,' . $this->user_id,
             'email' => 'required|email|unique:users,email,' . $this->user_id,
             'phone' => 'required|string|unique:users,phone,' . $this->user_id,
+            'role_id' => 'required|exists:roles,id',
+        ], [
+            'name.required' => __('El campo nombre es requerido'),
+            'username.required' => __('El campo usuario es requerido'),
+            'username.unique' => __('El usuario ya existe'),
+            'email.required' => __('El campo email es requerido'),
+            'email.email' => __('El email no es válido'),
+            'email.unique' => __('El email ya existe'),
+            'phone.required' => __('El campo teléfono es requerido'),
+            'phone.unique' => __('El teléfono ya existe'),
+            'role_id.required' => __('El campo rol es requerido'),
+            'role_id.exists' => __('El rol no existe'),
         ]);
 
         DB::beginTransaction();
         try {
-            User::updateOrCreate(
+            $user = User::updateOrCreate(
                 ['id' => $this->user_id],
                 [
                     'name' => $this->name,
@@ -65,6 +82,7 @@ class UserComponent extends Component
                     'password' => $this->user_id ? $this->user->password : Hash::make($this->username),
                 ]
             );
+            $user->roles()->sync($this->role_id);
             DB::commit();
             $this->alertSuccess(__('Usuario guardado correctamente'));
         } catch (Exception $e) {
@@ -80,10 +98,14 @@ class UserComponent extends Component
     public function edit(User $user)
     {
         $this->authorize('admin.users.edit');
+        $this->resetErrorBag();
         $this->open = true;
-        $this->user = $user;
-        $this->user_id = $this->user->id;
         $this->fill($this->user);
+        $this->user_id = $this->user->id;
+        $this->user = $user;
+        $this->role_id = $user->roles->first()->id ?? null;
+        $this->roles = Role::select('id', 'name')
+            ->get();
     }
 
     public function delete(User $user)

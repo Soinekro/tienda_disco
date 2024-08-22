@@ -13,21 +13,29 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        //categorias de productos en un discoteca
+        //categorias de productos en una tienda de soporte tecnico de computadoras
         Category::create([
-            'name' => 'Bebidas Gasificadas',
+            'name' => 'Accesorios',
         ]);
 
         Category::create([
-            'name' => 'Bebidas Energizantes',
+            'name' => 'Computadoras',
         ]);
 
         Category::create([
-            'name' => 'Bebidas Alcoholicas',
+            'name' => 'Laptops',
         ]);
 
         Category::create([
-            'name' => 'Bebidas sin Alcohol',
+            'name' => 'Monitores',
+        ]);
+
+        Category::create([
+            'name' => 'Perifericos',
+        ]);
+
+        Category::create([
+            'name' => 'Software',
         ]);
     }
 }
