@@ -72,6 +72,10 @@
                 @endforeach
             </tbody>
         </table>
+        {{-- links --}}
+        <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            {{ $products->links() }}
+        </div>
     </div>
 
     <x-dialog-modal wire:model="modalFormVisible">

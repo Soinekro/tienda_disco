@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Traits\Livewire\AlertsTrait;
 use App\Traits\Livewire\PaginateTrait;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -64,36 +65,42 @@ class ProductComponent extends Component
     public function store()
     {
         $this->authorize('admin.products.create');
-        // $this->validate(
-        //     [
-        //         'name' => 'required|min:3',
-        //         'category_id' => 'required|exists:categories,id',
-        //         'price_buy' => 'required|numeric|min:0.1',
-        //         'price_sale' => 'required|numeric|min:0.1|gt:price_buy',
-        //         'stock' => 'required|numeric|min:0',
-        //         'stock_min' => 'required|numeric|min:0',
-        //     ],
-        //     [
-        //         'name.required' => __('El nombre es requerido'),
-        //         'name.min' => __('El nombre debe tener al menos 3 caracteres'),
-        //         'category_id.required' => __('La categoría es requerida'),
-        //         'category_id.exists' => __('La categoría seleccionada no es válida'),
-        //         'price_buy.required' => __('El precio de compra es requerido'),
-        //         'price_buy.numeric' => __('El precio de compra debe ser un número'),
-        //         'price_buy.min' => __('El precio de compra debe ser mayor a 0'),
-        //         'price_sale.required' => __('El precio de venta es requerido'),
-        //         'price_sale.numeric' => __('El precio de venta debe ser un número'),
-        //         'price_sale.min' => __('El precio de venta debe ser mayor a 0'),
-        //         'price_sale.gt' => __('El precio de venta debe ser mayor al precio de compra'),
-        //         'stock.required' => __('El stock es requerido'),
-        //         'stock.numeric' => __('El stock debe ser un número'),
-        //         'stock.min' => __('El stock debe ser mayor a 0'),
-        //         'stock_min.required' => __('El stock mínimo es requerido'),
-        //         'stock_min.numeric' => __('El stock mínimo debe ser un número'),
-        //         'stock_min.min' => __('El stock mínimo debe ser mayor a 0'),
-        //     ]
-        // );
-        Product::create($this->modelData());
+        $this->validate(
+            [
+                'name' => 'required|min:3|unique:products,name,' . $this->product_id . ',id,category_id,' . $this->category_id,
+                'category_id' => 'required|exists:categories,id',
+                'price_buy' => 'required|numeric|min:0.1',
+                'price_sale' => 'required|numeric|min:0.1|gt:price_buy',
+                'stock' => 'required|numeric|min:0',
+                'stock_min' => 'required|numeric|min:0',
+            ],
+            [
+                'name.required' => __('El nombre es requerido'),
+                'name.min' => __('El nombre debe tener al menos 3 caracteres'),
+                'category_id.required' => __('La categoría es requerida'),
+                'category_id.exists' => __('La categoría seleccionada no es válida'),
+                'price_buy.required' => __('El precio de compra es requerido'),
+                'price_buy.numeric' => __('El precio de compra debe ser un número'),
+                'price_buy.min' => __('El precio de compra debe ser mayor a 0'),
+                'price_sale.required' => __('El precio de venta es requerido'),
+                'price_sale.numeric' => __('El precio de venta debe ser un número'),
+                'price_sale.min' => __('El precio de venta debe ser mayor a 0'),
+                'price_sale.gt' => __('El precio de venta debe ser mayor al precio de compra'),
+                'stock.required' => __('El stock es requerido'),
+                'stock.numeric' => __('El stock debe ser un número'),
+                'stock.min' => __('El stock debe ser mayor a 0'),
+                'stock_min.required' => __('El stock mínimo es requerido'),
+                'stock_min.numeric' => __('El stock mínimo debe ser un número'),
+                'stock_min.min' => __('El stock mínimo debe ser mayor a 0'),
+            ]
+        );
+        try {
+            Product::create($this->modelData());
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            $this->alertError(__('Error al crear el producto'));
+            return;
+        }
         $this->modalFormVisible = false;
         $this->resetInputs();
         $this->alertSuccess(__('Producto creado con éxito!'));
@@ -132,37 +139,43 @@ class ProductComponent extends Component
     public function update()
     {
         $this->authorize('admin.products.edit');
-        // $this->validate(
-        //     [
-        //         'category_id' => 'required|exists:categories,id,' . $this->category_id,
-        //         'name' => 'required|min:3|unique:products,name,' . $this->product_id,
-        //         'price_buy' => 'required|numeric|min:0.1',
-        //         'price_sale' => 'required|numeric|min:0.1|gt:price_buy',
-        //         'stock' => 'required|numeric|min:0',
-        //         'stock_min' => 'required|numeric|min:0',
-        //     ],
-        //     [
-        //         'category_id.required' => __('La categoría es requerida'),
-        //         'category_id.exists' => __('La categoría seleccionada no es válida'),
-        //         'name.required' => __('El nombre es requerido'),
-        //         'name.min' => __('El nombre debe tener al menos 3 caracteres'),
-        //         'name.unique' => __('El nombre ya ha sido registrado'),
-        //         'price_buy.required' => __('El precio de compra es requerido'),
-        //         'price_buy.numeric' => __('El precio de compra debe ser un número'),
-        //         'price_buy.min' => __('El precio de compra debe ser mayor a 0'),
-        //         'price_sale.required' => __('El precio de venta es requerido'),
-        //         'price_sale.numeric' => __('El precio de venta debe ser un número'),
-        //         'price_sale.min' => __('El precio de venta debe ser mayor a 0'),
-        //         'price_sale.gt' => __('El precio de venta debe ser mayor al precio de compra'),
-        //         'stock.required' => __('El stock es requerido'),
-        //         'stock.numeric' => __('El stock debe ser un número'),
-        //         'stock.min' => __('El stock debe ser mayor a 0'),
-        //         'stock_min.required' => __('El stock mínimo es requerido'),
-        //         'stock_min.numeric' => __('El stock mínimo debe ser un número'),
-        //         'stock_min.min' => __('El stock mínimo debe ser mayor a 0'),
-        //     ]
-        // );
-        Product::find($this->product_id)->update($this->modelData());
+        $this->validate(
+            [
+                'category_id' => 'required|exists:categories,id',
+                'name' => 'required|min:3|unique:products,name,' . $this->product_id . ',id,category_id,' . $this->category_id,
+                'price_buy' => 'required|numeric|min:0.1',
+                'price_sale' => 'required|numeric|min:0.1|gt:price_buy',
+                'stock' => 'required|numeric|min:0',
+                'stock_min' => 'required|numeric|min:0',
+            ],
+            [
+                'category_id.required' => __('La categoría es requerida'),
+                'category_id.exists' => __('La categoría seleccionada no es válida'),
+                'name.required' => __('El nombre es requerido'),
+                'name.min' => __('El nombre debe tener al menos 3 caracteres'),
+                'name.unique' => __('El nombre ya ha sido registrado'),
+                'price_buy.required' => __('El precio de compra es requerido'),
+                'price_buy.numeric' => __('El precio de compra debe ser un número'),
+                'price_buy.min' => __('El precio de compra debe ser mayor a 0'),
+                'price_sale.required' => __('El precio de venta es requerido'),
+                'price_sale.numeric' => __('El precio de venta debe ser un número'),
+                'price_sale.min' => __('El precio de venta debe ser mayor a 0'),
+                'price_sale.gt' => __('El precio de venta debe ser mayor al precio de compra'),
+                'stock.required' => __('El stock es requerido'),
+                'stock.numeric' => __('El stock debe ser un número'),
+                'stock.min' => __('El stock debe ser mayor a 0'),
+                'stock_min.required' => __('El stock mínimo es requerido'),
+                'stock_min.numeric' => __('El stock mínimo debe ser un número'),
+                'stock_min.min' => __('El stock mínimo debe ser mayor a 0'),
+            ]
+        );
+        try {
+            Product::find($this->product_id)->update($this->modelData());
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            $this->alertError(__('Error al actualizar el producto'));
+            return;
+        }
         $this->modalFormVisible = false;
         $this->resetInputs();
         $this->alertSuccess(__('Producto actualizado con éxito!'));
@@ -171,7 +184,23 @@ class ProductComponent extends Component
     public function delete(Product $product)
     {
         $this->authorize('admin.products.destroy');
-        $product->delete();
+        //verificar que no tenga productos asociados
+        if ($product->sales()->count() > 0) {
+            $this->alertError(__('No se puede eliminar el producto, tiene ventas asociadas'));
+            return;
+        }
+        if ($product->compras()->count() > 0) {
+            $this->alertError(__('No se puede eliminar el producto, tiene compras asociadas'));
+            return;
+        }
+        try {
+            $product->units()->delete();
+            $product->delete();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            $this->alertError(__('Error al eliminar el producto'));
+            return;
+        }
         $this->resetPage();
         $this->alertError(__('Producto eliminado con éxito!'));
     }
