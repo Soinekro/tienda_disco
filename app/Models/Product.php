@@ -16,7 +16,7 @@ class Product extends Model
         'price_sale',
         'stock',
         'stock_min',
-        // 'description',
+        'image',
     ];
 
     public function category()
@@ -35,13 +35,18 @@ class Product extends Model
             ->withPivot('quantity');
     }
 
-    public function sales()
+    public function salelists()
     {
-        return $this->hasMany(Sale::class);
+        return $this->hasMany(SaleDetail::class);
     }
 
     public function compras()
     {
-        return $this->hasMany(Shopping::class, 'product_id');
+        return $this->hasMany(ShoppingDetail::class, 'product_id');
+    }
+
+    public function image()
+    {
+        return $this->morphOne(Image::class, 'imageable');
     }
 }

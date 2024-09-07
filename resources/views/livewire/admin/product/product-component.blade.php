@@ -13,6 +13,7 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="py-3 px-6">{{ __('ID') }}</th>
+                    <th scope="col" class="py-3 px-6">{{ __('Imagen') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Producto') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Categoría') }}</th>
                     <th scope="col" class="py-3 px-6">{{ __('Precio compra') }}</th>
@@ -26,6 +27,15 @@
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                         <td class="py-4 px-6">
                             {{ $item->id }}
+                        </td>
+                        <td class="py-4 px-6">
+                            @if ($item->image)
+                                <img src="{{ asset('storage/' . $item->image->path) }}" alt="{{ $item->name }}"
+                                    class="w-10 h-10 rounded-full">
+                            @else
+                                <img src="{{ asset('img/no_image.png') }}" alt="{{ $item->name }}"
+                                    class="w-10 h-10 rounded-full">
+                            @endif
                         </td>
                         <td class="py-4 px-6">
                             {{ $item->name }}
@@ -73,7 +83,8 @@
             </tbody>
         </table>
         {{-- links --}}
-        <div class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div
+            class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
             {{ $products->links() }}
         </div>
     </div>
@@ -134,6 +145,18 @@
                 @error('stock_min')
                     <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
+            </div>
+            {{-- imagen --}}
+            <div class="mt-4">
+                <x-label for="image" value="{{ __('Imagen') }}" />
+                <input type="file" id="image" wire:model="image" class="block mt-1 w-full" accept="image/*">
+                @error('image')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+                @if ($image)
+                    <img src="{{ $image->temporaryUrl() }}" alt="{{ $name }}"
+                        class="mt-2 w-full rounded-full">
+                @endif
             </div>
         </x-slot>
         <x-slot name="footer">

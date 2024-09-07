@@ -6,8 +6,11 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Traits\Livewire\AlertsTrait;
 use App\Traits\Livewire\PaginateTrait;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class ProductComponent extends Component
@@ -15,6 +18,7 @@ class ProductComponent extends Component
     use WithPagination;
     use PaginateTrait;
     use AlertsTrait;
+    use WithFileUploads;
 
     public $product;
     public $product_id;
@@ -25,6 +29,7 @@ class ProductComponent extends Component
     public $stock;
     public $stock_min;
     public $description;
+    public $image;
     public $categories = [];
     public $modalFormVisible = false;
 
@@ -40,7 +45,7 @@ class ProductComponent extends Component
     public function render()
     {
         $this->authorize('admin.products.index');
-        $products = Product::with('category')
+        $products = Product::with('category', 'image')
             ->orderBy($this->sort, $this->direction)
             ->paginate($this->perPage);
 
@@ -94,9 +99,17 @@ class ProductComponent extends Component
                 'stock_min.min' => __('El stock mínimo debe ser mayor a 0'),
             ]
         );
+        DB::beginTransaction();
         try {
-            Product::create($this->modelData());
+            $product = Product::create($this->modelData());
+            $product->image()->create(
+                [
+                    'path' => $this->image->store('products')
+                ]
+            );
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error($e->getMessage());
             $this->alertError(__('Error al crear el producto'));
             return;
@@ -117,6 +130,7 @@ class ProductComponent extends Component
                 'stock',
                 'stock_min',
                 'description',
+                'image',
             ]
         );
     }
@@ -171,6 +185,21 @@ class ProductComponent extends Component
         );
         try {
             Product::find($this->product_id)->update($this->modelData());
+            $product = Product::find($this->product_id);
+            Storage::delete($product->image->path);
+            if ($product->image !== null) {
+                $product->image()->update(
+                    [
+                        'path' => $this->image->store('products'),
+                    ]
+                );
+            } else {
+                $product->image()->create(
+                    [
+                        'path' => $this->image->store('products'),
+                    ]
+                );
+            }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             $this->alertError(__('Error al actualizar el producto'));
@@ -185,7 +214,7 @@ class ProductComponent extends Component
     {
         $this->authorize('admin.products.destroy');
         //verificar que no tenga productos asociados
-        if ($product->sales()->count() > 0) {
+        if ($product->salelists()->count() > 0) {
             $this->alertError(__('No se puede eliminar el producto, tiene ventas asociadas'));
             return;
         }
