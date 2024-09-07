@@ -34,4 +34,14 @@ class Product extends Model
         return $this->belongsToMany(Unit::class, 'product_units')
             ->withPivot('quantity');
     }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    public function compras()
+    {
+        return $this->hasMany(Shopping::class, 'product_id');
+    }
 }

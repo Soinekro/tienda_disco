@@ -53,6 +53,11 @@
                 @endforeach
             </tbody>
         </table>
+        {{-- links --}}
+        <div
+            class="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            {{ $users->links() }}
+        </div>
     </div>
 
     <!-- Modal Form -->
@@ -94,6 +99,7 @@
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>
+<<<<<<< HEAD
 
             {{-- roles --}}
             <div>
@@ -102,6 +108,14 @@
                     <option value="">{{ __('Seleccione un rol') }}</option>
                     @foreach ($roles as $role)
                         <option value="{{ $role->id }}" @selected($role->id == $role_id)>
+=======
+            <div class="mt-4">
+                <x-label for="roles" value="{{ __('Roles') }}" />
+                <select name="role_id" id="role_id" class="block mt-1 w-full">
+                    <option value="">{{ __('Seleccione un rol') }}</option>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role->id }}" @if ($role_id == $role->id) selected @endif>
+>>>>>>> 36e016ef238949828c9297c77b4a2c959b8a33e2
                             {{ $role->name }}
                         </option>
                     @endforeach

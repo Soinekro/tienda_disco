@@ -59,5 +59,4 @@ trait PaginateTrait
     {
         $this->resetPage();
     }
-
-    }
+}

@@ -29,6 +29,8 @@ class UserComponent extends Component
     public $phone;
     public $role_id;
 
+    public $roles = [];
+    public $role_id = null;
     public function render()
     {
         $this->authorize('admin.users.index');
@@ -42,7 +44,13 @@ class UserComponent extends Component
     public function create()
     {
         $this->authorize('admin.users.create');
+<<<<<<< HEAD
         $this->reset('name', 'username', 'email', 'phone', 'user_id', 'user', 'role_id');
+=======
+        $this->reset('name', 'username', 'email', 'phone', 'user_id', 'user');
+        $this->roles = Role::select('id', 'name')
+            ->get();
+>>>>>>> 36e016ef238949828c9297c77b4a2c959b8a33e2
         $this->open = true;
     }
 
@@ -65,6 +73,7 @@ class UserComponent extends Component
             // 'username' => 'required|string|unique:users,username,' . $this->user_id,
             'email' => 'required|email|unique:users,email,' . $this->user_id,
             'phone' => 'required|string|unique:users,phone,' . $this->user_id,
+<<<<<<< HEAD
             'role_id' => 'required|exists:roles,id|not_in:1|integer',
         ], [
             'name.required' => __('El nombre es requerido'),
@@ -78,6 +87,20 @@ class UserComponent extends Component
             'role_id.required' => __('El rol es requerido'),
             'role_id.exists' => __('El rol seleccionado no es válido'),
             'role_id.not_in' => __('No puedes asignar el rol de superadmin')
+=======
+            'role_id' => 'required|exists:roles,id',
+        ], [
+            'name.required' => __('El campo nombre es requerido'),
+            'username.required' => __('El campo usuario es requerido'),
+            'username.unique' => __('El usuario ya existe'),
+            'email.required' => __('El campo email es requerido'),
+            'email.email' => __('El email no es válido'),
+            'email.unique' => __('El email ya existe'),
+            'phone.required' => __('El campo teléfono es requerido'),
+            'phone.unique' => __('El teléfono ya existe'),
+            'role_id.required' => __('El campo rol es requerido'),
+            'role_id.exists' => __('El rol no existe'),
+>>>>>>> 36e016ef238949828c9297c77b4a2c959b8a33e2
         ]);
         DB::beginTransaction();
         try {
@@ -91,8 +114,12 @@ class UserComponent extends Component
                     'password' => $this->user_id ? $this->user->password : Hash::make($this->username),
                 ]
             );
+<<<<<<< HEAD
             $user->roles()
                 ->sync([$this->role_id]);
+=======
+            $user->roles()->sync($this->role_id);
+>>>>>>> 36e016ef238949828c9297c77b4a2c959b8a33e2
             DB::commit();
             $this->alertSuccess(__('Usuario guardado correctamente'));
         } catch (Exception $e) {
@@ -108,11 +135,20 @@ class UserComponent extends Component
     public function edit(User $user)
     {
         $this->authorize('admin.users.edit');
+        $this->resetErrorBag();
         $this->open = true;
+<<<<<<< HEAD
         $this->user = $user;
         $this->user_id = $this->user->id;
         $this->role_id = $this->user->roles->first()->id ?? null;
+=======
+>>>>>>> 36e016ef238949828c9297c77b4a2c959b8a33e2
         $this->fill($this->user);
+        $this->user_id = $this->user->id;
+        $this->user = $user;
+        $this->role_id = $user->roles->first()->id ?? null;
+        $this->roles = Role::select('id', 'name')
+            ->get();
     }
 
     public function delete(User $user)

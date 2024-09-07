@@ -3,12 +3,14 @@
 namespace App\Livewire\Admin\Category;
 
 use App\Models\Category;
+use App\Traits\Livewire\AlertsTrait;
 use App\Traits\Livewire\PaginateTrait;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class CategoryComponent extends Component
 {
+    use AlertsTrait;
     use PaginateTrait;
     use WithPagination;
 
@@ -80,6 +82,12 @@ class CategoryComponent extends Component
     public function delete($id)
     {
         $this->authorize('admin.categories.destroy');
+        //verificar que no tenga productos asociados
+        $category = Category::with('products')->find($id);
+        if ($category->products->count() > 0) {
+            $this->alertError('No se puede eliminar la categoría, tiene productos asociados');
+            return;
+        }
         Category::destroy($id);
     }
 
@@ -96,10 +104,5 @@ class CategoryComponent extends Component
             'name.required' => 'El nombre es requerido',
             'name.min' => 'El nombre debe tener al menos 3 caracteres',
         ];
-    }
-
-    public function paginationView()
-    {
-        return 'vendor.livewire.bootstrap';
     }
 }
