@@ -99,23 +99,12 @@
                     <span class="error">{{ $message }}</span>
                 @enderror
             </div>
-<<<<<<< HEAD
-
-            {{-- roles --}}
-            <div>
-                <x-label for="roles" value="{{ __('Roles') }}" />
-                <select id="role_id" class="block mt-1 w-full" wire:model="role_id">
-                    <option value="">{{ __('Seleccione un rol') }}</option>
-                    @foreach ($roles as $role)
-                        <option value="{{ $role->id }}" @selected($role->id == $role_id)>
-=======
             <div class="mt-4">
                 <x-label for="roles" value="{{ __('Roles') }}" />
-                <select name="role_id" id="role_id" class="block mt-1 w-full">
+                <select name="role_id" id="role_id" wire:model="role_id" class="block mt-1 w-full">
                     <option value="">{{ __('Seleccione un rol') }}</option>
                     @foreach ($roles as $role)
                         <option value="{{ $role->id }}" @if ($role_id == $role->id) selected @endif>
->>>>>>> 36e016ef238949828c9297c77b4a2c959b8a33e2
                             {{ $role->name }}
                         </option>
                     @endforeach

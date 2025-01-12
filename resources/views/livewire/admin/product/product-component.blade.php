@@ -156,6 +156,8 @@
                 @if ($image)
                     <img src="{{ $image->temporaryUrl() }}" alt="{{ $name }}"
                         class="mt-2 w-full rounded-full">
+                @else
+                    <img src="{{ null }}" alt="" class="mt-2 w-full rounded-full">
                 @endif
             </div>
         </x-slot>
