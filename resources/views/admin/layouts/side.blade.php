@@ -170,7 +170,7 @@
                     </div>
                 @endcanany
                 {{-- usuarios --}}
-                {{-- @canany(['admin.users.index', 'admin.roles.index']) --}}
+                @canany(['admin.users.index', 'admin.roles.index'])
                 <div x-data="{ open: false }"
                     @if (request()->is('admin/users*')) x-init="open = true"
                             @else
@@ -195,7 +195,7 @@
                     </x-admin.layouts.side-button>
                     <!-- Dropdown menu -->
                     <div x-show="open" class="mt-0.5">
-                        {{-- @can('admin.roles.index') --}}
+                        @can('admin.roles.index')
                         <x-admin.layouts.side-button :active="request()->routeIs('admin.roles.index')" href="{{ route('admin.roles.index') }}">
                             <x-slot name="icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
@@ -208,8 +208,8 @@
                             </x-slot>
                             {{ __('Roles') }}
                         </x-admin.layouts.side-button>
-                        {{-- @endcan --}}
-                        {{-- @can('admin.users.index') --}}
+                        @endcan
+                        @can('admin.users.index')
                         <x-admin.layouts.side-button :active="request()->routeIs('admin.users.index')" href="{{ route('admin.users.index') }}">
                             <x-slot name="icon">
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -222,10 +222,10 @@
                             </x-slot>
                             {{ __('Usuarios') }}
                         </x-admin.layouts.side-button>
-                        {{-- @endcan --}}
+                        @endcan
                     </div>
                 </div>
-                {{-- @endcanany --}}
+                @endcanany
                 @canany(['admin.providers.index', 'admin.compras.index', 'admin.salidas.index'])
                     <div x-data="{ open: false }"
                         @if (request()->is('admin/movimientos*')) x-init="open = true"
