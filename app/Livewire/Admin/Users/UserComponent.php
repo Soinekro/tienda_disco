@@ -110,8 +110,9 @@ class UserComponent extends Component
         $this->authorize('admin.users.edit');
         $this->resetErrorBag();
         $this->open = true;
-        $this->fill($this->user);
-        $this->user_id = $this->user->id;
+
+        $this->fill($user);
+        $this->user_id = $user->id;
         $this->user = $user;
         $this->role_id = $user->roles->first()->id ?? null;
         $this->roles = Role::select('id', 'name')

@@ -186,8 +186,8 @@ class ProductComponent extends Component
         try {
             Product::find($this->product_id)->update($this->modelData());
             $product = Product::find($this->product_id);
-            Storage::delete($product->image->path);
             if ($product->image !== null) {
+                Storage::delete($product->image->path);
                 $product->image()->update(
                     [
                         'path' => $this->image->store('products'),
